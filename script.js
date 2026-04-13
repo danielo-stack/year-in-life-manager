@@ -250,10 +250,14 @@
       }
     }
     spawnBubble(){
-      if(this.bubbles.length>4||this.mode!=='team')return;
+      if(this.bubbles.length>5||(this.mode!=='team'&&this.mode!=='zoom'))return;
       const txt=INTERACTIONS[Math.random()*INTERACTIONS.length|0];
       const n=this.teamR[1+Math.floor(Math.random()*(this.teamR.length-1))];
-      this.bubbles.push({txt,x:n.px+(Math.random()-.5)*30,y:n.py-20-Math.random()*15,life:0,maxLife:180});
+      // Position outside the network — push further from center
+      const dx=n.px-this.w/2,dy=n.py-this.h/2;
+      const len=Math.sqrt(dx*dx+dy*dy)||1;
+      const pushOut=35+Math.random()*20;
+      this.bubbles.push({txt,x:n.px+(dx/len)*pushOut,y:n.py+(dy/len)*pushOut-10,life:0,maxLife:200});
     }
     drawOrg(alpha){
       const ctx=this.ctx;
@@ -307,46 +311,28 @@
         ctx.fillStyle='rgba(255,255,255,.3)';ctx.font=(n.isCenter?'10':'10')+'px "DM Sans"';
         ctx.fillText(n.title,n.px,n.py-r+3);
       });
-      // Interaction bubbles
+      // Interaction bubbles — positioned outside the network, solid bg
+      ctx.font='500 10px "DM Sans"';
       this.bubbles.forEach(b=>{
         b.life++;
         let bop=1;
-        if(b.life<20)bop=b.life/20;
-        else if(b.life>b.maxLife-30)bop=Math.max(0,(b.maxLife-b.life)/30);
-        ctx.globalAlpha=bop*.55*alpha;
-        const bw=ctx.measureText(b.txt).width+16;
-        ctx.fillStyle='rgba(6,182,212,.08)';
-        ctx.strokeStyle='rgba(6,182,212,.18)';ctx.lineWidth=.5;
-        const bx=b.x-bw/2,by=b.y-8;
-        ctx.beginPath();ctx.roundRect(bx,by,bw,18,4);ctx.fill();ctx.stroke();
-        ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='9px "DM Sans"';ctx.textAlign='center';
-        ctx.fillText(b.txt,b.x,b.y+3);
-        b.y-=.15; // float upward slowly
+        if(b.life<25)bop=b.life/25;
+        else if(b.life>b.maxLife-40)bop=Math.max(0,(b.maxLife-b.life)/40);
+        ctx.globalAlpha=bop*.75*alpha;
+        const bw=ctx.measureText(b.txt).width+20;
+        const bx=b.x-bw/2,by=b.y-10;
+        // Solid dark background
+        ctx.fillStyle='rgba(8,8,26,.85)';
+        ctx.beginPath();ctx.roundRect(bx,by,bw,22,5);ctx.fill();
+        ctx.strokeStyle='rgba(6,182,212,.3)';ctx.lineWidth=.8;ctx.stroke();
+        ctx.fillStyle='rgba(6,182,212,.8)';ctx.textAlign='center';
+        ctx.fillText(b.txt,b.x,b.y+5);
+        b.y-=.12;
       });
       this.bubbles=this.bubbles.filter(b=>b.life<b.maxLife);
       ctx.globalAlpha=1;
     }
-    tick(){
-      const ctx=this.ctx;ctx.clearRect(0,0,this.w,this.h);
-      if(this.mode==='off'){requestAnimationFrame(()=>this.tick());return}
-
-      if(this.mode==='zoom'){
-        this.zoomT=Math.min(this.zoomT+.006,1);
-        const orgA=Math.max(0,1-this.zoomT*1.5);
-        const teamA=Math.max(0,Math.min(1,(this.zoomT-.3)/.5));
-        if(orgA>0){this.drawOrg(orgA);if(this.zoomT<.7)for(let i=0;i<2;i++)this.spawnDot('org')}
-        if(teamA>0){this.drawTeam(teamA);if(this.zoomT>.2)for(let i=0;i<2;i++)this.spawnDot('team')}
-        if(this.zoomT>=1){this.mode='team';this.dots=this.dots.filter(d=>d._m==='team')}
-      }else{
-        for(let i=0;i<3;i++)this.spawnDot();
-        if(this.mode==='org')this.drawOrg(1);
-        else if(this.mode==='team'){
-          this.drawTeam(1);
-          this.bubbleTimer++;
-          if(this.bubbleTimer%60===0)this.spawnBubble();
-        }
-      }
-
+    drawDots(ctx){
       for(let i=this.dots.length-1;i>=0;i--){
         const d=this.dots[i];d.p+=d.s*this.speed;
         if(d.p>=1){this.dots.splice(i,1);continue}
@@ -357,6 +343,100 @@
         ctx.globalAlpha=op*.6;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);
         ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=3;ctx.fill();
         ctx.shadowBlur=0;ctx.globalAlpha=1;
+      }
+    }
+    tick(){
+      const ctx=this.ctx;ctx.clearRect(0,0,this.w,this.h);
+      if(this.mode==='off'){requestAnimationFrame(()=>this.tick());return}
+
+      if(this.mode==='zoom'){
+        this.zoomT=Math.min(this.zoomT+.005,1);
+        const zt=this.zoomT;
+        // Eased zoom
+        const ez=zt*zt*(3-2*zt); // smoothstep
+
+        // Find Operations dept for zoom target
+        const ops=this.deptsR.find(d=>d.name==='Operations');
+        const targetX=ops?ops.px:this.w*.62;
+        const targetY=ops?ops.py:this.h*.75;
+
+        // Zoom scale: 1 → 8 (zooming into the ops bubble)
+        const scale=1+ez*7;
+        // Non-ops elements fade out
+        const othersAlpha=Math.max(0,1-ez*2.5);
+        // Ops bubble fades at the end as team takes over
+        const opsAlpha=ez<.6?1:Math.max(0,1-(ez-.6)/.3);
+        // Team fades in
+        const teamAlpha=Math.max(0,Math.min(1,(ez-.4)/.4));
+
+        ctx.save();
+        // Translate so ops center stays in view, then scale
+        ctx.translate(this.w/2,this.h/2);
+        ctx.scale(scale,scale);
+        ctx.translate(-targetX,-targetY);
+
+        // Draw org (non-ops fading, ops staying)
+        DEPT_LINKS.forEach(([a,b])=>{
+          const da=this.deptsR[a],db=this.deptsR[b];
+          const isOpsLink=da.name==='Operations'||db.name==='Operations';
+          ctx.globalAlpha=(isOpsLink?opsAlpha:othersAlpha)*.06;
+          ctx.beginPath();ctx.moveTo(da.px,da.py);ctx.lineTo(db.px,db.py);
+          ctx.strokeStyle='#fff';ctx.lineWidth=.8/scale;ctx.stroke();
+        });
+        this.deptsR.forEach(d=>{
+          const isOps=d.name==='Operations';
+          const a=isOps?opsAlpha:othersAlpha;
+          if(a<.01)return;
+          ctx.globalAlpha=a;
+          ctx.beginPath();ctx.arc(d.px,d.py,d.r+12,0,Math.PI*2);
+          const g=ctx.createRadialGradient(d.px,d.py,d.r*.2,d.px,d.py,d.r+12);
+          g.addColorStop(0,d.color+'22');g.addColorStop(1,d.color+'00');
+          ctx.fillStyle=g;ctx.fill();
+          ctx.beginPath();ctx.arc(d.px,d.py,d.r,0,Math.PI*2);
+          ctx.fillStyle=d.color+(isOps?'25':'15');ctx.fill();
+          ctx.strokeStyle=d.color+(isOps?'70':'40');ctx.lineWidth=(isOps?2:1.2)/scale;ctx.stroke();
+          if(12/scale>4){ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='600 '+(d.r>25?11:9)/scale+'px "DM Sans"';ctx.textAlign='center';ctx.fillText(d.name,d.px,d.py+3)}
+        });
+
+        // Draw org dots (scaled down so they look right)
+        this.dots.filter(d=>d._m==='org').forEach(d=>{
+          const t=d.p;
+          const x=(1-t)*(1-t)*d.fx+2*(1-t)*t*d.cpx+t*t*d.tx;
+          const y=(1-t)*(1-t)*d.fy+2*(1-t)*t*d.cpy+t*t*d.ty;
+          let op=1;if(t<.1)op=t*10;else if(t>.85)op=(1-t)/.15;
+          ctx.globalAlpha=op*.4*othersAlpha;ctx.beginPath();ctx.arc(x,y,d.sz/scale,0,Math.PI*2);
+          ctx.fillStyle=d.col;ctx.fill();
+        });
+
+        ctx.restore();
+
+        // Draw team on top (in screen space, not zoomed)
+        if(teamAlpha>0){
+          this.drawTeam(teamAlpha);
+        }
+
+        // Update dots
+        for(let i=this.dots.length-1;i>=0;i--){
+          const d=this.dots[i];d.p+=d.s*this.speed;
+          if(d.p>=1)this.dots.splice(i,1);
+        }
+        // Spawn
+        if(zt<.5)for(let i=0;i<2;i++)this.spawnDot('org');
+        if(zt>.3)for(let i=0;i<2;i++)this.spawnDot('team');
+        if(zt>=1){this.mode='team';this.dots=this.dots.filter(d=>d._m==='team')}
+      }else{
+        for(let i=0;i<3;i++)this.spawnDot();
+        if(this.mode==='org'){this.drawOrg(1);this.drawDots(ctx)}
+        else if(this.mode==='team'){
+          this.drawTeam(1);this.drawDots(ctx);
+          this.bubbleTimer++;
+          if(this.bubbleTimer%50===0)this.spawnBubble();
+        }
+      }
+
+      // Draw team dots (when not zooming — zoom handles its own)
+      if(this.mode!=='zoom'){
+        // dots already drawn above
       }
       requestAnimationFrame(()=>this.tick());
     }
