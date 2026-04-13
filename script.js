@@ -7,14 +7,14 @@
 
   const C = { self:'#3B82F6', others:'#8B5CF6', talent:'#EC4899', ext:'#F59E0B', collab:'#10B981', nadia:'#EC4899' };
   const TEAM = [
-    {name:'Jordan',title:'Sr. Engineer'},
-    {name:'Priya',title:'Product Lead'},
-    {name:'Alex',title:'Engineer'},
-    {name:'Sam',title:'Ops Lead'},
+    {name:'Jordan',title:'Senior Associate'},
+    {name:'Priya',title:'Associate'},
+    {name:'Alex',title:'Associate'},
+    {name:'Sam',title:'Senior Analyst'},
     {name:'Tomás',title:'Analyst'},
-    {name:'Kai',title:'Designer'},
-    {name:'Marcus',title:'Engineer'},
-    {name:'Lin',title:'Program Mgr'},
+    {name:'Kai',title:'Analyst'},
+    {name:'Marcus',title:'Associate'},
+    {name:'Lin',title:'Coordinator'},
   ];
 
   /* ── Floating quotes ── */
@@ -176,116 +176,133 @@
   ];
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
-  // Org departments with colors and sizes
   const DEPTS=[
-    {name:'Engineering',color:'#3B82F6',size:2800,x:.5,y:.38},
-    {name:'Product',color:'#8B5CF6',size:800,x:.28,y:.25},
-    {name:'Marketing',color:'#EC4899',size:1200,x:.72,y:.22},
-    {name:'Sales',color:'#F59E0B',size:2100,x:.78,y:.55},
-    {name:'Finance',color:'#10B981',size:600,x:.22,y:.6},
-    {name:'HR',color:'#F472B6',size:400,x:.35,y:.75},
-    {name:'Operations',color:'#06B6D4',size:900,x:.65,y:.75},
-    {name:'Legal',color:'#A78BFA',size:200,x:.15,y:.42},
+    {name:'Engineering',color:'#3B82F6',size:2800,x:.5,y:.35},
+    {name:'Product',color:'#8B5CF6',size:800,x:.25,y:.22},
+    {name:'Marketing',color:'#EC4899',size:1200,x:.75,y:.20},
+    {name:'Sales',color:'#F59E0B',size:2100,x:.82,y:.55},
+    {name:'Finance',color:'#10B981',size:600,x:.18,y:.58},
+    {name:'HR',color:'#F472B6',size:400,x:.32,y:.78},
+    {name:'Operations',color:'#06B6D4',size:900,x:.68,y:.78},
+    {name:'Legal',color:'#A78BFA',size:200,x:.12,y:.38},
   ];
+  const DEPT_LINKS=[[0,1],[0,2],[0,3],[0,4],[1,2],[1,6],[2,3],[3,4],[3,6],[4,5],[5,0],[5,7],[6,5],[6,0],[7,4],[7,5]];
 
-  // Connections between departments (for lines)
-  const DEPT_LINKS=[[0,1],[0,2],[0,3],[0,4],[1,2],[1,6],[2,3],[3,4],[3,6],[4,5],[5,0],[5,7],[6,5],[7,4]];
+  // Team connections (peer-to-peer network, not just hub-spoke)
+  const TEAM_LINKS=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],// Maya to all
+    [1,2],[1,3],[2,3],[2,5],[3,4],[4,7],[5,6],[6,7],[7,8],[8,1],[3,6],[4,5],[1,8],[2,7]]; // peer connections
 
   class OrgMap {
     constructor(cv){
       this.cv=cv;this.ctx=cv.getContext('2d');
-      this.mode='off'; // off, org, team
-      this.dots=[];this.speed=1;
+      this.mode='off'; // off, org, zoom, team
+      this.dots=[];this.speed=1;this.zoomT=0;this.zoomActive=false;
       this.resize();window.addEventListener('resize',()=>this.resize());
     }
     resize(){
       const d=devicePixelRatio||1,w=this.cv.offsetWidth,h=this.cv.offsetHeight;
       this.cv.width=w*d;this.cv.height=h*d;
       this.ctx.setTransform(d,0,0,d,0,0);this.w=w;this.h=h;
-      // Compute dept positions
-      this.depts=DEPTS.map(d=>({...d,px:d.x*w,py:d.y*h,r:Math.sqrt(d.size)/3+12}));
-      // Team positions (for zoom mode)
-      const cx=w/2,cy=h/2,tr=Math.min(w,h)*.30;
+      this.depts=DEPTS.map(d=>({...d,px:d.x*w,py:d.y*h,r:Math.sqrt(d.size)/2.5+10}));
+      const cx=w/2,cy=h/2,tr=Math.min(w,h)*.32;
       this.maya={x:cx,y:cy};
-      this.teamNodes=TEAM.map((t,i)=>{const a=(i*45-90)*Math.PI/180;return{...t,x:cx+Math.cos(a)*tr,y:cy+Math.sin(a)*tr}});
+      this.teamAll=[{x:cx,y:cy,name:'Maya',title:'Manager',isCenter:true}];
+      TEAM.forEach((t,i)=>{const a=(i*45-90)*Math.PI/180;this.teamAll.push({x:cx+Math.cos(a)*tr,y:cy+Math.sin(a)*tr,name:t.name,title:t.title})});
     }
     spawnDot(){
-      if(this.dots.length>300)return;
+      if(this.dots.length>400)return;
       if(this.mode==='org'){
         const li=DEPT_LINKS[Math.random()*DEPT_LINKS.length|0];
         const a=this.depts[li[0]],b=this.depts[li[1]];
-        const mx=(a.px+b.px)/2,my=(a.py+b.py)/2;
-        const sp=20+Math.random()*40,ca=Math.random()*Math.PI*2;
-        this.dots.push({fx:a.px,fy:a.py,tx:b.px,ty:b.py,cpx:mx+Math.cos(ca)*sp,cpy:my+Math.sin(ca)*sp,p:0,s:.003+Math.random()*.005,col:a.color,sz:1+Math.random()*1.5});
+        // Dots travel close to the line (small offset)
+        const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy);
+        const nx=-dy/len*(.5+Math.random()*6),ny=dx/len*(.5+Math.random()*6);
+        const mx=(a.px+b.px)/2+nx,my=(a.py+b.py)/2+ny;
+        this.dots.push({fx:a.px,fy:a.py,tx:b.px,ty:b.py,cpx:mx,cpy:my,p:0,s:.004+Math.random()*.006,col:a.color,sz:2+Math.random()*2});
       }else if(this.mode==='team'){
-        const all=[this.maya,...this.teamNodes];
-        let fi=Math.random()*all.length|0,ti=Math.random()*all.length|0;
-        while(ti===fi)ti=Math.random()*all.length|0;
-        const f=all[fi],t=all[ti],mx=(f.x+t.x)/2,my=(f.y+t.y)/2;
-        const sp=30+Math.random()*60,ca=Math.random()*Math.PI*2;
-        this.dots.push({fx:f.x,fy:f.y,tx:t.x,ty:t.y,cpx:mx+Math.cos(ca)*sp,cpy:my+Math.sin(ca)*sp,p:0,s:.003+Math.random()*.005,col:['#3B82F6','#8B5CF6','#EC4899','#10B981','#F59E0B'][Math.random()*5|0],sz:1+Math.random()*1.5});
+        const li=TEAM_LINKS[Math.random()*TEAM_LINKS.length|0];
+        const a=this.teamAll[li[0]],b=this.teamAll[li[1]];
+        const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+        const nx=-dy/len*(1+Math.random()*5),ny=dx/len*(1+Math.random()*5);
+        const mx=(a.x+b.x)/2+nx,my=(a.y+b.y)/2+ny;
+        this.dots.push({fx:a.x,fy:a.y,tx:b.x,ty:b.y,cpx:mx,cpy:my,p:0,s:.004+Math.random()*.006,col:['#06B6D4','#3B82F6','#8B5CF6','#EC4899','#10B981'][Math.random()*5|0],sz:2+Math.random()*1.5});
       }
     }
     drawOrg(){
-      const ctx=this.ctx,w=this.w,h=this.h;
-      // Connection lines
-      ctx.lineWidth=1;
+      const ctx=this.ctx;
       DEPT_LINKS.forEach(([a,b])=>{
         const da=this.depts[a],db=this.depts[b];
         ctx.beginPath();ctx.moveTo(da.px,da.py);ctx.lineTo(db.px,db.py);
-        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.stroke();
+        ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
       });
-      // Department nodes
-      this.depts.forEach(d=>{
-        // Glow
-        ctx.beginPath();ctx.arc(d.px,d.py,d.r+8,0,Math.PI*2);
-        const g=ctx.createRadialGradient(d.px,d.py,d.r*.3,d.px,d.py,d.r+8);
-        g.addColorStop(0,d.color+'25');g.addColorStop(1,d.color+'00');
+      this.depts.forEach((d,i)=>{
+        const isOps=i===6;
+        ctx.beginPath();ctx.arc(d.px,d.py,d.r+10,0,Math.PI*2);
+        const g=ctx.createRadialGradient(d.px,d.py,d.r*.3,d.px,d.py,d.r+10);
+        g.addColorStop(0,d.color+'30');g.addColorStop(1,d.color+'00');
         ctx.fillStyle=g;ctx.fill();
-        // Circle
         ctx.beginPath();ctx.arc(d.px,d.py,d.r,0,Math.PI*2);
-        ctx.fillStyle=d.color+'20';ctx.fill();
-        ctx.strokeStyle=d.color+'50';ctx.lineWidth=1.5;ctx.stroke();
-        // Label
-        ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='600 10px "DM Sans"';ctx.textAlign='center';
-        ctx.fillText(d.name,d.px,d.py-d.r-8);
+        ctx.fillStyle=d.color+(isOps&&this.mode==='zoom'?'40':'18');ctx.fill();
+        ctx.strokeStyle=d.color+(isOps&&this.mode==='zoom'?'80':'45');ctx.lineWidth=isOps&&this.mode==='zoom'?2.5:1.5;ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='600 11px "DM Sans"';ctx.textAlign='center';
+        ctx.fillText(d.name,d.px,d.py+4);
         ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='9px "Space Mono"';
-        ctx.fillText(d.size.toLocaleString()+' people',d.px,d.py-d.r+3);
+        ctx.fillText(d.size.toLocaleString(),d.px,d.py+16);
       });
     }
     drawTeam(){
       const ctx=this.ctx;
-      // Lines from Maya to each member
-      this.teamNodes.forEach(n=>{
-        ctx.beginPath();ctx.moveTo(this.maya.x,this.maya.y);ctx.lineTo(n.x,n.y);
-        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;ctx.stroke();
+      // Peer connection lines
+      TEAM_LINKS.forEach(([a,b])=>{
+        if(a>=this.teamAll.length||b>=this.teamAll.length)return;
+        const na=this.teamAll[a],nb=this.teamAll[b];
+        ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
+        ctx.strokeStyle=a===0?'rgba(6,182,212,.1)':'rgba(255,255,255,.04)';
+        ctx.lineWidth=a===0?1.2:0.8;ctx.stroke();
       });
-      // Maya node
-      ctx.beginPath();ctx.arc(this.maya.x,this.maya.y,16,0,Math.PI*2);
-      ctx.fillStyle='rgba(139,92,246,.5)';ctx.shadowColor='rgba(139,92,246,.4)';ctx.shadowBlur=16;ctx.fill();ctx.shadowBlur=0;
-      ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='500 12px "Playfair Display"';ctx.textAlign='center';
-      ctx.fillText('Maya',this.maya.x,this.maya.y-22);
-      ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px "DM Sans"';
-      ctx.fillText('Manager',this.maya.x,this.maya.y-11);
       // Team nodes
-      this.teamNodes.forEach(n=>{
-        ctx.beginPath();ctx.arc(n.x,n.y,7,0,Math.PI*2);
-        ctx.fillStyle='rgba(255,255,255,.08)';ctx.fill();
-        ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.stroke();
-        ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='600 10px "DM Sans"';ctx.textAlign='center';
-        ctx.fillText(n.name,n.x,n.y-14);
-        ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px "DM Sans"';
-        ctx.fillText(n.title,n.x,n.y-4);
+      this.teamAll.forEach(n=>{
+        const r=n.isCenter?20:9;
+        ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);
+        if(n.isCenter){
+          ctx.fillStyle='rgba(6,182,212,.4)';ctx.shadowColor='rgba(6,182,212,.35)';ctx.shadowBlur=20;ctx.fill();ctx.shadowBlur=0;
+        }else{
+          ctx.fillStyle='rgba(255,255,255,.06)';ctx.fill();
+          ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.stroke();
+        }
+        ctx.fillStyle=n.isCenter?'rgba(255,255,255,.9)':'rgba(255,255,255,.6)';
+        ctx.font=n.isCenter?'500 14px "Playfair Display"':'600 10px "DM Sans"';
+        ctx.textAlign='center';
+        ctx.fillText(n.name,n.x,n.y-r-6);
+        ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='9px "DM Sans"';
+        ctx.fillText(n.title,n.x,n.y-r+5);
       });
     }
     tick(){
       const ctx=this.ctx;ctx.clearRect(0,0,this.w,this.h);
       if(this.mode==='off'){requestAnimationFrame(()=>this.tick());return}
-      // Spawn
-      for(let i=0;i<2;i++)this.spawnDot();
-      // Draw structure
-      if(this.mode==='org')this.drawOrg();
-      else if(this.mode==='team')this.drawTeam();
+
+      // Zoom animation: draw fading org + expanding team
+      if(this.mode==='zoom'){
+        this.zoomT=Math.min(this.zoomT+.008,1);
+        ctx.globalAlpha=1-this.zoomT*.7;
+        this.drawOrg();
+        ctx.globalAlpha=1;
+        if(this.zoomT>.3){
+          ctx.globalAlpha=Math.min(1,(this.zoomT-.3)/.4);
+          this.drawTeam();
+          ctx.globalAlpha=1;
+        }
+        // Spawn org dots while fading, team dots while appearing
+        if(this.zoomT<.6)for(let i=0;i<2;i++){this.mode='org';this.spawnDot();this.mode='zoom'}
+        if(this.zoomT>.3)for(let i=0;i<2;i++){this.mode='team';this.spawnDot();this.mode='zoom'}
+        if(this.zoomT>=1){this.mode='team';this.dots=this.dots.filter(d=>!d._org)}
+      }else{
+        for(let i=0;i<3;i++)this.spawnDot();
+        if(this.mode==='org')this.drawOrg();
+        else if(this.mode==='team')this.drawTeam();
+      }
+
       // Animate dots
       for(let i=this.dots.length-1;i>=0;i--){
         const d=this.dots[i];d.p+=d.s*this.speed;
@@ -294,13 +311,17 @@
         const x=(1-t)*(1-t)*d.fx+2*(1-t)*t*d.cpx+t*t*d.tx;
         const y=(1-t)*(1-t)*d.fy+2*(1-t)*t*d.cpy+t*t*d.ty;
         let op=1;if(t<.1)op=t*10;else if(t>.85)op=(1-t)/.15;
-        ctx.globalAlpha=op*.5;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);
-        ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=4;ctx.fill();
+        ctx.globalAlpha=op*.6;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);
+        ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=3;ctx.fill();
         ctx.shadowBlur=0;ctx.globalAlpha=1;
       }
       requestAnimationFrame(()=>this.tick());
     }
-    setMode(m){this.mode=m;this.dots=[];}
+    setMode(m){
+      if(m==='zoom'){this.zoomT=0;this.zoomActive=true}
+      this.mode=m;
+      if(m!=='zoom')this.dots=[];
+    }
   }
 
   /* ═══════════════ OPENING SCROLL ═══════════════ */
@@ -313,10 +334,10 @@
     if(beginCta)beginCta.addEventListener('click',()=>document.getElementById('tlSection').scrollIntoView({behavior:'smooth'}));
 
     const phases={
-      question(){tmRing.classList.add('big');tmRing.classList.remove('small','hidden');orgMap.setMode('off');beginOv.classList.remove('vis')},
-      org(){tmRing.classList.remove('big');tmRing.classList.add('small');orgMap.setMode('org');beginOv.classList.remove('vis')},
-      zoom(){tmRing.classList.add('small');orgMap.setMode('team');beginOv.classList.remove('vis')},
-      problem(){tmRing.classList.add('small');orgMap.setMode('team');orgMap.speed=.5;beginOv.classList.remove('vis')},
+      question(){tmRing.classList.add('big');tmRing.classList.remove('hidden');orgMap.setMode('off');beginOv.classList.remove('vis')},
+      org(){tmRing.classList.add('hidden');orgMap.setMode('org');orgMap.speed=1;beginOv.classList.remove('vis')},
+      zoom(){tmRing.classList.add('hidden');orgMap.setMode('zoom');orgMap.speed=1;beginOv.classList.remove('vis')},
+      problem(){tmRing.classList.add('hidden');orgMap.setMode('team');orgMap.speed=.5;beginOv.classList.remove('vis')},
       nadia(){tmRing.classList.add('hidden');orgMap.speed=.15;beginOv.classList.add('vis')},
       begin(){tmRing.classList.add('hidden');beginOv.classList.add('vis')},
     };
