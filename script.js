@@ -133,7 +133,7 @@
       collabInsight:'Jordan development gap identified from Maya\'s observations',
     },
     { month:8,name:'August',type:'push',layers:['self','others','talent','ext','collab'],isConvergence:true,
-      isKeyMoment:true,keyNum:4,
+      isKeyMoment:true,keyNum:3,
       keyTitle:'The Convergence',keySub:'She saw it before Maya did.',
       keyContext:'A department is dissolved. Kai is being absorbed onto Maya\'s team — someone who didn\'t choose to be here. Meanwhile: Sam is on leave, Jordan\'s situation is still developing, the Priya-Alex dynamic is fragile, and the AI mandate is live.',
       title:"Everything converges",
@@ -173,7 +173,7 @@
       buckets:{team:'Performance exit handled with full evidence'},
     },
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
-      isKeyMoment:true,keyNum:3,
+      isKeyMoment:true,keyNum:4,
       keyTitle:'The Evidence',keySub:'You don\'t have to remember everything. I did.',
       keyContext:'It\'s December. Performance review season. Maya has 8 reviews due in two weeks. She hasn\'t kept a running notes doc — she\'s been meaning to all year.',
       title:"Year-end reviews",
@@ -593,21 +593,21 @@
     const modal=document.createElement('div');
     modal.id='productVizModal';modal.className='pv-modal';
     const surfaces={1:'Teams / Email message',2:'In-chat conversation',3:'Growth Moments tab → Workday',4:'My Work — Insights tab'};
+    const images={1:'moment1-teams.png',3:'moment4-insights.png'};
+    const hasImage=images[num];
     modal.innerHTML=`
       <div class="pv-backdrop"></div>
-      <div class="pv-content">
+      <div class="pv-content ${hasImage?'pv-has-img':''}">
         <button class="pv-close">✕</button>
         <div class="pv-header">
           <span class="pv-num">Moment ${num}</span>
           <h2 class="pv-title">${title}</h2>
           <p class="pv-surface">${surfaces[num]||''}</p>
         </div>
-        <div class="pv-placeholder">
-          <div class="pv-placeholder-inner">
-            <p class="pv-ph-text">Product visualization</p>
-            <p class="pv-ph-sub">Design in progress — this will show the actual product experience for this moment.</p>
-          </div>
-        </div>
+        ${hasImage?
+          `<div class="pv-img-wrap"><img src="${images[num]}" alt="${title}" class="pv-img"></div>`:
+          `<div class="pv-placeholder"><div class="pv-placeholder-inner"><p class="pv-ph-text">Product visualization</p><p class="pv-ph-sub">Design in progress — this will show the actual product experience for this moment.</p></div></div>`
+        }
       </div>`;
 
     document.body.appendChild(modal);
