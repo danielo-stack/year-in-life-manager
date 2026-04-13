@@ -1336,12 +1336,12 @@
 
     // Nodes — cards with items inside
     const NODES=[
-      {id:'nadia',label:'Nadia',x:.50,y:.46,r:36,color:C.nadia,phase:'intro',isNadia:true},
-      {id:'maya',label:'Maya',sub:'Manager',x:.82,y:.24,r:22,color:C.self,phase:'v1',isCircle:true},
-      {id:'talent',label:'Talent Moments',items:['Performance Reviews','Goal Setting','360 Feedback','Calibrations','Engagement Surveys'],x:.14,y:.18,color:C.talent,phase:'v1',isCard:true,cw:130,ch:90},
-      {id:'org',label:'Org Context',items:['HRIS Data','Calendar','LMS','Org Strategy','Market Data'],x:.14,y:.68,color:C.ext,phase:'v1',isCard:true,cw:120,ch:90},
-      {id:'collab',label:'Collab Intelligence',items:['Jordan','Priya','Alex','Sam','Tomás','Kai','Marcus','Lin'],x:.80,y:.68,color:C.collab,phase:'v2',isCard:true,cw:140,ch:100,isTeam:true},
-      {id:'orgi',label:'Org Intelligence',items:['Sentiment Analysis','Skills Assessment','Gap Analysis','Collaboration Themes','Engagement Trends'],x:.50,y:.06,color:C.others,phase:'orgi',isCard:true,cw:140,ch:90},
+      {id:'nadia',label:'Nadia',x:.48,y:.46,r:38,color:C.nadia,phase:'intro',isNadia:true},
+      {id:'maya',label:'Maya',x:.82,y:.16,color:C.self,phase:'v1',isCard:true,cw:155,ch:72,items:['New Manager','Collaborative style','Building directness','Goal: exec presence']},
+      {id:'talent',label:'Talent Moments',items:['Performance Reviews','Goal Setting','360 Feedback','Calibrations','Engagement Surveys'],x:.10,y:.12,color:C.talent,phase:'v1',isCard:true,cw:155,ch:95},
+      {id:'org',label:'Org Context',items:['HRIS Data','Calendar Data','LMS Courses','Org Strategy','Market Signals'],x:.10,y:.62,color:C.ext,phase:'v1',isCard:true,cw:145,ch:95},
+      {id:'collab',label:'Collab Intelligence',items:['Jordan','Priya','Alex','Sam','Tomás','Kai','Marcus','Lin'],x:.78,y:.62,color:C.collab,phase:'v2',isCard:true,cw:165,ch:105,isTeam:true},
+      {id:'orgi',label:'Org Intelligence',items:['Sentiment Analysis','Skills Assessment','Gap Analysis','Collab Themes','Engagement Trends'],x:.48,y:.02,color:C.others,phase:'orgi',isCard:true,cw:160,ch:95},
     ];
     const LINKS=[
       {a:'nadia',b:'maya',phase:'v1'},{a:'nadia',b:'talent',phase:'v1'},{a:'nadia',b:'org',phase:'v1'},
@@ -1402,17 +1402,6 @@
           ctx.strokeStyle=n.color+'70';ctx.lineWidth=2;ctx.stroke();
           ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='600 15px "Playfair Display"';ctx.textAlign='center';
           ctx.fillText(n.label,px,py+5);
-        }else if(n.isCircle){
-          // Maya — circle with label
-          const g=ctx.createRadialGradient(px,py,n.r*.3,px,py,n.r+10);
-          g.addColorStop(0,n.color+'30');g.addColorStop(1,n.color+'00');
-          ctx.beginPath();ctx.arc(px,py,n.r+10,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
-          ctx.fillStyle=n.color+'25';ctx.fill();
-          ctx.strokeStyle=n.color+'50';ctx.lineWidth=1.5;ctx.stroke();
-          ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='600 13px "Playfair Display"';ctx.textAlign='center';
-          ctx.fillText(n.label,px,py+4);
-          if(n.sub){ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px "DM Sans"';ctx.fillText(n.sub,px,py+n.r+14)}
         }else if(n.isCard){
           // Rounded rectangle card with items
           const cw=n.cw,ch=n.ch;
@@ -1421,26 +1410,25 @@
           ctx.fillStyle=n.color+'0a';ctx.fill();
           ctx.strokeStyle=n.color+'35';ctx.lineWidth=1.2;ctx.stroke();
           // Title
-          ctx.fillStyle=n.color;ctx.font='700 11px "DM Sans"';ctx.textAlign='left';
-          ctx.fillText(n.label,cx+10,cy+16);
+          ctx.fillStyle=n.color;ctx.font='700 13px "DM Sans"';ctx.textAlign='left';
+          ctx.fillText(n.label,cx+12,cy+18);
           // Items
           if(n.isTeam){
-            // Draw team member mini-circles
-            ctx.font='500 8px "DM Sans"';
+            ctx.font='600 9px "DM Sans"';
             n.items.forEach((item,i)=>{
               const row=Math.floor(i/4),col=i%4;
-              const ix=cx+14+col*32,iy=cy+30+row*22;
-              ctx.beginPath();ctx.arc(ix,iy,5,0,Math.PI*2);
+              const ix=cx+18+col*38,iy=cy+36+row*26;
+              ctx.beginPath();ctx.arc(ix,iy,6,0,Math.PI*2);
               ctx.fillStyle=n.color+'30';ctx.fill();
               ctx.strokeStyle=n.color+'50';ctx.lineWidth=.8;ctx.stroke();
-              ctx.fillStyle='rgba(255,255,255,.55)';ctx.textAlign='center';
-              ctx.fillText(item,ix,iy+14);
+              ctx.fillStyle='rgba(255,255,255,.6)';ctx.textAlign='center';
+              ctx.fillText(item,ix,iy+16);
             });
           }else{
-            ctx.font='400 9px "DM Sans"';ctx.fillStyle='rgba(255,255,255,.5)';
+            ctx.font='400 10px "DM Sans"';ctx.fillStyle='rgba(255,255,255,.55)';
             n.items.forEach((item,i)=>{
               ctx.textAlign='left';
-              ctx.fillText('· '+item,cx+10,cy+30+i*13);
+              ctx.fillText('· '+item,cx+12,cy+34+i*14);
             });
           }
         }
