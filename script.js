@@ -177,133 +177,176 @@
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
   const DEPTS=[
-    {name:'Engineering',color:'#3B82F6',size:2800,x:.5,y:.35},
-    {name:'Product',color:'#8B5CF6',size:800,x:.25,y:.22},
-    {name:'Marketing',color:'#EC4899',size:1200,x:.75,y:.20},
-    {name:'Sales',color:'#F59E0B',size:2100,x:.82,y:.55},
-    {name:'Finance',color:'#10B981',size:600,x:.18,y:.58},
-    {name:'HR',color:'#F472B6',size:400,x:.32,y:.78},
-    {name:'Operations',color:'#06B6D4',size:900,x:.68,y:.78},
-    {name:'Legal',color:'#A78BFA',size:200,x:.12,y:.38},
+    {name:'Engineering',color:'#3B82F6',x:.42,y:.32,r:38},
+    {name:'Product',color:'#8B5CF6',x:.22,y:.18,r:28},
+    {name:'Marketing',color:'#EC4899',x:.72,y:.15,r:30},
+    {name:'Sales',color:'#F59E0B',x:.85,y:.45,r:36},
+    {name:'Finance',color:'#10B981',x:.12,y:.52,r:24},
+    {name:'HR',color:'#F472B6',x:.28,y:.72,r:22},
+    {name:'Operations',color:'#06B6D4',x:.62,y:.75,r:30},
+    {name:'Legal',color:'#A78BFA',x:.08,y:.32,r:18},
+    {name:'Customer Success',color:'#F97316',x:.88,y:.72,r:26},
+    {name:'Data Science',color:'#14B8A6',x:.55,y:.12,r:22},
+    {name:'Design',color:'#E879F9',x:.38,y:.52,r:20},
+    {name:'IT',color:'#64748B',x:.15,y:.85,r:18},
   ];
-  const DEPT_LINKS=[[0,1],[0,2],[0,3],[0,4],[1,2],[1,6],[2,3],[3,4],[3,6],[4,5],[5,0],[5,7],[6,5],[6,0],[7,4],[7,5]];
+  const DEPT_LINKS=[[0,1],[0,2],[0,3],[0,10],[1,2],[1,9],[1,10],[2,3],[2,8],[3,4],[3,8],[4,5],[4,7],[5,0],[5,6],[5,11],[6,0],[6,3],[6,8],[7,4],[7,11],[8,3],[9,0],[9,10],[10,1],[11,5],[11,7],[0,6],[2,9],[4,11],[6,11],[1,3]];
 
-  // Team connections (peer-to-peer network, not just hub-spoke)
-  const TEAM_LINKS=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],// Maya to all
-    [1,2],[1,3],[2,3],[2,5],[3,4],[4,7],[5,6],[6,7],[7,8],[8,1],[3,6],[4,5],[1,8],[2,7]]; // peer connections
+  // Team — organic positions, not a circle
+  const TEAM_POS=[
+    {name:'Maya',title:'Manager',x:.50,y:.46,isCenter:true},
+    {name:'Jordan',title:'Senior Associate',x:.28,y:.22},
+    {name:'Priya',title:'Associate',x:.72,y:.20},
+    {name:'Alex',title:'Associate',x:.82,y:.48},
+    {name:'Sam',title:'Senior Analyst',x:.70,y:.72},
+    {name:'Tomás',title:'Analyst',x:.38,y:.78},
+    {name:'Kai',title:'Analyst',x:.15,y:.58},
+    {name:'Marcus',title:'Associate',x:.22,y:.40},
+    {name:'Lin',title:'Coordinator',x:.55,y:.18},
+  ];
+  const TEAM_LINKS=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],
+    [1,2],[1,7],[1,8],[2,3],[2,8],[3,4],[4,5],[5,6],[6,7],[7,1],[3,8],[4,6],[5,7],[2,4],[1,6],[8,3]];
+
+  // Interaction bubbles
+  const INTERACTIONS=[
+    '1:1 with Tomás','Slack: Alex → Sam','Email: Marcus → Maya','Feedback to Priya',
+    'Team standup','1:1 with Jordan','Slack: Kai → Priya','Email: Lin → Alex',
+    '1:1 with Sam','Goal review: Priya','Slack: Maya → team','Skip-level prep',
+    'Feedback from Jordan','1:1 with Kai','Project update: Alex','Calendar: team offsite',
+    'Slack: Tomás → Marcus','Email: Maya → Lin','Perf notes: Marcus','1:1 with Lin',
+  ];
 
   class OrgMap {
     constructor(cv){
       this.cv=cv;this.ctx=cv.getContext('2d');
-      this.mode='off'; // off, org, zoom, team
-      this.dots=[];this.speed=1;this.zoomT=0;this.zoomActive=false;
+      this.mode='off';this.dots=[];this.speed=1;this.zoomT=0;
+      this.bubbles=[];this.bubbleTimer=0;
       this.resize();window.addEventListener('resize',()=>this.resize());
     }
     resize(){
       const d=devicePixelRatio||1,w=this.cv.offsetWidth,h=this.cv.offsetHeight;
       this.cv.width=w*d;this.cv.height=h*d;
       this.ctx.setTransform(d,0,0,d,0,0);this.w=w;this.h=h;
-      this.depts=DEPTS.map(d=>({...d,px:d.x*w,py:d.y*h,r:Math.sqrt(d.size)/2.5+10}));
-      const cx=w/2,cy=h/2,tr=Math.min(w,h)*.32;
-      this.maya={x:cx,y:cy};
-      this.teamAll=[{x:cx,y:cy,name:'Maya',title:'Manager',isCenter:true}];
-      TEAM.forEach((t,i)=>{const a=(i*45-90)*Math.PI/180;this.teamAll.push({x:cx+Math.cos(a)*tr,y:cy+Math.sin(a)*tr,name:t.name,title:t.title})});
+      this.deptsR=DEPTS.map(d=>({...d,px:d.x*w,py:d.y*h}));
+      this.teamR=TEAM_POS.map(t=>({...t,px:t.x*w,py:t.y*h}));
     }
-    spawnDot(){
-      if(this.dots.length>400)return;
-      if(this.mode==='org'){
+    spawnDot(forMode){
+      const m=forMode||this.mode;
+      if(this.dots.length>500)return;
+      if(m==='org'){
         const li=DEPT_LINKS[Math.random()*DEPT_LINKS.length|0];
-        const a=this.depts[li[0]],b=this.depts[li[1]];
-        // Dots travel close to the line (small offset)
-        const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy);
-        const nx=-dy/len*(.5+Math.random()*6),ny=dx/len*(.5+Math.random()*6);
-        const mx=(a.px+b.px)/2+nx,my=(a.py+b.py)/2+ny;
-        this.dots.push({fx:a.px,fy:a.py,tx:b.px,ty:b.py,cpx:mx,cpy:my,p:0,s:.004+Math.random()*.006,col:a.color,sz:2+Math.random()*2});
-      }else if(this.mode==='team'){
+        const a=this.deptsR[li[0]],b=this.deptsR[li[1]];
+        const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy)||1;
+        const off=(.5+Math.random()*4)*(Math.random()>.5?1:-1);
+        const mx=(a.px+b.px)/2+(-dy/len)*off,my=(a.py+b.py)/2+(dx/len)*off;
+        this.dots.push({fx:a.px,fy:a.py,tx:b.px,ty:b.py,cpx:mx,cpy:my,p:0,s:.003+Math.random()*.005,col:a.color,sz:2.5+Math.random()*2,_m:m});
+      }else if(m==='team'){
         const li=TEAM_LINKS[Math.random()*TEAM_LINKS.length|0];
-        const a=this.teamAll[li[0]],b=this.teamAll[li[1]];
-        const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
-        const nx=-dy/len*(1+Math.random()*5),ny=dx/len*(1+Math.random()*5);
-        const mx=(a.x+b.x)/2+nx,my=(a.y+b.y)/2+ny;
-        this.dots.push({fx:a.x,fy:a.y,tx:b.x,ty:b.y,cpx:mx,cpy:my,p:0,s:.004+Math.random()*.006,col:['#06B6D4','#3B82F6','#8B5CF6','#EC4899','#10B981'][Math.random()*5|0],sz:2+Math.random()*1.5});
+        const a=this.teamR[li[0]],b=this.teamR[li[1]];
+        const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy)||1;
+        const off=(1+Math.random()*4)*(Math.random()>.5?1:-1);
+        const mx=(a.px+b.px)/2+(-dy/len)*off,my=(a.py+b.py)/2+(dx/len)*off;
+        this.dots.push({fx:a.px,fy:a.py,tx:b.px,ty:b.py,cpx:mx,cpy:my,p:0,s:.004+Math.random()*.005,col:['#06B6D4','#3B82F6','#8B5CF6','#EC4899','#10B981'][Math.random()*5|0],sz:2+Math.random()*2,_m:m});
       }
     }
-    drawOrg(){
-      const ctx=this.ctx;
-      DEPT_LINKS.forEach(([a,b])=>{
-        const da=this.depts[a],db=this.depts[b];
-        ctx.beginPath();ctx.moveTo(da.px,da.py);ctx.lineTo(db.px,db.py);
-        ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
-      });
-      this.depts.forEach((d,i)=>{
-        const isOps=i===6;
-        ctx.beginPath();ctx.arc(d.px,d.py,d.r+10,0,Math.PI*2);
-        const g=ctx.createRadialGradient(d.px,d.py,d.r*.3,d.px,d.py,d.r+10);
-        g.addColorStop(0,d.color+'30');g.addColorStop(1,d.color+'00');
-        ctx.fillStyle=g;ctx.fill();
-        ctx.beginPath();ctx.arc(d.px,d.py,d.r,0,Math.PI*2);
-        ctx.fillStyle=d.color+(isOps&&this.mode==='zoom'?'40':'18');ctx.fill();
-        ctx.strokeStyle=d.color+(isOps&&this.mode==='zoom'?'80':'45');ctx.lineWidth=isOps&&this.mode==='zoom'?2.5:1.5;ctx.stroke();
-        ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='600 11px "DM Sans"';ctx.textAlign='center';
-        ctx.fillText(d.name,d.px,d.py+4);
-        ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='9px "Space Mono"';
-        ctx.fillText(d.size.toLocaleString(),d.px,d.py+16);
-      });
+    spawnBubble(){
+      if(this.bubbles.length>4||this.mode!=='team')return;
+      const txt=INTERACTIONS[Math.random()*INTERACTIONS.length|0];
+      const n=this.teamR[1+Math.floor(Math.random()*(this.teamR.length-1))];
+      this.bubbles.push({txt,x:n.px+(Math.random()-.5)*30,y:n.py-20-Math.random()*15,life:0,maxLife:180});
     }
-    drawTeam(){
+    drawOrg(alpha){
       const ctx=this.ctx;
-      // Peer connection lines
-      TEAM_LINKS.forEach(([a,b])=>{
-        if(a>=this.teamAll.length||b>=this.teamAll.length)return;
-        const na=this.teamAll[a],nb=this.teamAll[b];
-        ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
-        ctx.strokeStyle=a===0?'rgba(6,182,212,.1)':'rgba(255,255,255,.04)';
-        ctx.lineWidth=a===0?1.2:0.8;ctx.stroke();
+      ctx.globalAlpha=alpha;
+      DEPT_LINKS.forEach(([a,b])=>{
+        const da=this.deptsR[a],db=this.deptsR[b];
+        ctx.beginPath();ctx.moveTo(da.px,da.py);ctx.lineTo(db.px,db.py);
+        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=.8;ctx.stroke();
       });
-      // Team nodes
-      this.teamAll.forEach(n=>{
-        const r=n.isCenter?20:9;
-        ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);
+      this.deptsR.forEach((d,i)=>{
+        const isOps=d.name==='Operations';
+        const highlight=isOps&&this.mode==='zoom';
+        // Glow
+        ctx.beginPath();ctx.arc(d.px,d.py,d.r+12,0,Math.PI*2);
+        const g=ctx.createRadialGradient(d.px,d.py,d.r*.2,d.px,d.py,d.r+12);
+        g.addColorStop(0,d.color+(highlight?'40':'22'));g.addColorStop(1,d.color+'00');
+        ctx.fillStyle=g;ctx.fill();
+        // Circle
+        ctx.beginPath();ctx.arc(d.px,d.py,d.r,0,Math.PI*2);
+        ctx.fillStyle=d.color+(highlight?'35':'15');ctx.fill();
+        ctx.strokeStyle=d.color+(highlight?'90':'40');ctx.lineWidth=highlight?2.5:1.2;ctx.stroke();
+        // Label
+        ctx.fillStyle='rgba(255,255,255,'+(highlight?'.9':'.65')+')';
+        ctx.font=(highlight?'700':'600')+' '+(d.r>25?'11':'9')+'px "DM Sans"';ctx.textAlign='center';
+        ctx.fillText(d.name,d.px,d.py+3);
+      });
+      ctx.globalAlpha=1;
+    }
+    drawTeam(alpha){
+      const ctx=this.ctx;
+      ctx.globalAlpha=alpha;
+      TEAM_LINKS.forEach(([a,b])=>{
+        const na=this.teamR[a],nb=this.teamR[b];
+        ctx.beginPath();ctx.moveTo(na.px,na.py);ctx.lineTo(nb.px,nb.py);
+        ctx.strokeStyle=a===0?'rgba(6,182,212,.12)':'rgba(255,255,255,.04)';
+        ctx.lineWidth=a===0?1.2:.7;ctx.stroke();
+      });
+      this.teamR.forEach(n=>{
+        const r=n.isCenter?28:11;
+        ctx.beginPath();ctx.arc(n.px,n.py,r,0,Math.PI*2);
         if(n.isCenter){
-          ctx.fillStyle='rgba(6,182,212,.4)';ctx.shadowColor='rgba(6,182,212,.35)';ctx.shadowBlur=20;ctx.fill();ctx.shadowBlur=0;
+          ctx.fillStyle='rgba(6,182,212,.35)';ctx.shadowColor='rgba(6,182,212,.3)';ctx.shadowBlur=24;ctx.fill();ctx.shadowBlur=0;
         }else{
-          ctx.fillStyle='rgba(255,255,255,.06)';ctx.fill();
+          ctx.fillStyle='rgba(255,255,255,.05)';ctx.fill();
           ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.stroke();
         }
-        ctx.fillStyle=n.isCenter?'rgba(255,255,255,.9)':'rgba(255,255,255,.6)';
-        ctx.font=n.isCenter?'500 14px "Playfair Display"':'600 10px "DM Sans"';
+        ctx.fillStyle=n.isCenter?'rgba(255,255,255,.92)':'rgba(255,255,255,.65)';
+        ctx.font=n.isCenter?'500 16px "Playfair Display"':'600 12px "DM Sans"';
         ctx.textAlign='center';
-        ctx.fillText(n.name,n.x,n.y-r-6);
-        ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='9px "DM Sans"';
-        ctx.fillText(n.title,n.x,n.y-r+5);
+        ctx.fillText(n.name,n.px,n.py-r-8);
+        ctx.fillStyle='rgba(255,255,255,.3)';ctx.font=(n.isCenter?'10':'10')+'px "DM Sans"';
+        ctx.fillText(n.title,n.px,n.py-r+3);
       });
+      // Interaction bubbles
+      this.bubbles.forEach(b=>{
+        b.life++;
+        let bop=1;
+        if(b.life<20)bop=b.life/20;
+        else if(b.life>b.maxLife-30)bop=Math.max(0,(b.maxLife-b.life)/30);
+        ctx.globalAlpha=bop*.55*alpha;
+        const bw=ctx.measureText(b.txt).width+16;
+        ctx.fillStyle='rgba(6,182,212,.08)';
+        ctx.strokeStyle='rgba(6,182,212,.18)';ctx.lineWidth=.5;
+        const bx=b.x-bw/2,by=b.y-8;
+        ctx.beginPath();ctx.roundRect(bx,by,bw,18,4);ctx.fill();ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='9px "DM Sans"';ctx.textAlign='center';
+        ctx.fillText(b.txt,b.x,b.y+3);
+        b.y-=.15; // float upward slowly
+      });
+      this.bubbles=this.bubbles.filter(b=>b.life<b.maxLife);
+      ctx.globalAlpha=1;
     }
     tick(){
       const ctx=this.ctx;ctx.clearRect(0,0,this.w,this.h);
       if(this.mode==='off'){requestAnimationFrame(()=>this.tick());return}
 
-      // Zoom animation: draw fading org + expanding team
       if(this.mode==='zoom'){
-        this.zoomT=Math.min(this.zoomT+.008,1);
-        ctx.globalAlpha=1-this.zoomT*.7;
-        this.drawOrg();
-        ctx.globalAlpha=1;
-        if(this.zoomT>.3){
-          ctx.globalAlpha=Math.min(1,(this.zoomT-.3)/.4);
-          this.drawTeam();
-          ctx.globalAlpha=1;
-        }
-        // Spawn org dots while fading, team dots while appearing
-        if(this.zoomT<.6)for(let i=0;i<2;i++){this.mode='org';this.spawnDot();this.mode='zoom'}
-        if(this.zoomT>.3)for(let i=0;i<2;i++){this.mode='team';this.spawnDot();this.mode='zoom'}
-        if(this.zoomT>=1){this.mode='team';this.dots=this.dots.filter(d=>!d._org)}
+        this.zoomT=Math.min(this.zoomT+.006,1);
+        const orgA=Math.max(0,1-this.zoomT*1.5);
+        const teamA=Math.max(0,Math.min(1,(this.zoomT-.3)/.5));
+        if(orgA>0){this.drawOrg(orgA);if(this.zoomT<.7)for(let i=0;i<2;i++)this.spawnDot('org')}
+        if(teamA>0){this.drawTeam(teamA);if(this.zoomT>.2)for(let i=0;i<2;i++)this.spawnDot('team')}
+        if(this.zoomT>=1){this.mode='team';this.dots=this.dots.filter(d=>d._m==='team')}
       }else{
         for(let i=0;i<3;i++)this.spawnDot();
-        if(this.mode==='org')this.drawOrg();
-        else if(this.mode==='team')this.drawTeam();
+        if(this.mode==='org')this.drawOrg(1);
+        else if(this.mode==='team'){
+          this.drawTeam(1);
+          this.bubbleTimer++;
+          if(this.bubbleTimer%60===0)this.spawnBubble();
+        }
       }
 
-      // Animate dots
       for(let i=this.dots.length-1;i>=0;i--){
         const d=this.dots[i];d.p+=d.s*this.speed;
         if(d.p>=1){this.dots.splice(i,1);continue}
@@ -318,9 +361,10 @@
       requestAnimationFrame(()=>this.tick());
     }
     setMode(m){
-      if(m==='zoom'){this.zoomT=0;this.zoomActive=true}
+      if(m==='zoom'){this.zoomT=0}
       this.mode=m;
       if(m!=='zoom')this.dots=[];
+      this.bubbles=[];this.bubbleTimer=0;
     }
   }
 
