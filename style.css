@@ -50,12 +50,7 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 /* Right: visualization column (sticky) */
 .op-viz-col{position:sticky;top:0;height:100vh;z-index:2}
 .op-viz{position:relative;width:100%;height:100%;overflow:hidden;border-left:1px solid rgba(255,255,255,.03)}
-.op-viz canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1.2s ease}
-.op-viz canvas.vis{opacity:1}
-.floating-quotes{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;opacity:0;transition:opacity 1s ease}
-.floating-quotes.vis{opacity:1}
-.fq{position:absolute;font-family:var(--font-b);font-size:11px;font-weight:500;color:rgba(255,255,255,.18);white-space:nowrap}
-.fq.bright{color:rgba(255,255,255,.3);font-size:12px}
+#orgCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
 
 /* Talent moment ring (inside viz) */
 .tm-ring{position:absolute;inset:0;z-index:3;pointer-events:none;transition:all 1.2s var(--ease)}
@@ -65,10 +60,6 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 .tm-lines{position:absolute;inset:2%;width:96%;height:96%;opacity:0;transition:opacity 1s ease}
 .tm-ring.big .tm-lines{opacity:1}
 .tm-ring.small .tm-lines{opacity:.15}
-
-/* Connection canvas for pink lines */
-#connectCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;opacity:0;transition:opacity .8s ease}
-#connectCanvas.vis{opacity:1}
 
 /* Full-screen begin overlay */
 .begin-overlay{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:rgba(2,8,24,.92);backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:opacity 1.2s ease}
