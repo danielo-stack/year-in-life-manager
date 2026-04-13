@@ -1325,6 +1325,77 @@
   }
 
   /* ═══════════════ SENTIMENT CHART ═══════════════ */
+  /* ═══════════════ EVOLUTION SCROLL ═══════════════ */
+  function initEvolution(){
+    const slides=document.querySelectorAll('.evo-slide');
+    const nodes=document.querySelectorAll('.ev-node');
+    const linesSvg=document.getElementById('evLines');
+    if(!slides.length)return;
+
+    let currentEvo='';
+
+    // Build SVG lines (connect Nadia center to each node)
+    // Nadia is at 50%,45% — we draw lines to each node position
+    const lineData=[
+      {to:'ev-maya',x1:50,y1:45,x2:88,y2:28,cls:'ev-line',show:'v1'},
+      {to:'ev-talent',x1:50,y1:45,x2:12,y2:22,cls:'ev-line',show:'v1'},
+      {to:'ev-org',x1:50,y1:45,x2:12,y2:64,cls:'ev-line',show:'v1'},
+      {to:'ev-collab',x1:50,y1:45,x2:88,y2:80,cls:'ev-line-collab',show:'v2'},
+      {to:'ev-orgi',x1:50,y1:45,x2:50,y2:12,cls:'ev-line-orgi',show:'orgi'},
+    ];
+    linesSvg.innerHTML='';
+    lineData.forEach(l=>{
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',l.x1);line.setAttribute('y1',l.y1);
+      line.setAttribute('x2',l.x2);line.setAttribute('y2',l.y2);
+      line.setAttribute('class',l.cls);
+      line.dataset.evoShow=l.show;
+      linesSvg.appendChild(line);
+    });
+
+    const phases={
+      intro:'',
+      v1:'v1',
+      v2:'v2',
+      orgi:'orgi',
+    };
+    const phaseOrder=['intro','v1','v2','orgi'];
+
+    function applyPhase(phase){
+      if(phase===currentEvo)return;
+      currentEvo=phase;
+      const idx=phaseOrder.indexOf(phase);
+
+      // Show/hide nodes based on which phases are active
+      nodes.forEach(n=>{
+        const showAt=n.dataset.evoShow;
+        const showIdx=phaseOrder.indexOf(showAt);
+        n.classList.toggle('vis',showIdx>=0&&showIdx<=idx);
+      });
+
+      // Show/hide lines
+      linesSvg.querySelectorAll('line').forEach(l=>{
+        const showAt=l.dataset.evoShow;
+        const showIdx=phaseOrder.indexOf(showAt);
+        l.classList.toggle('vis',showIdx>=0&&showIdx<=idx);
+      });
+    }
+
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        const card=e.target.querySelector('.op-card');
+        if(e.isIntersecting){
+          if(card)card.classList.add('vis');
+          const phase=e.target.dataset.evo;
+          if(phase)applyPhase(phase);
+        }else{
+          if(card)card.classList.remove('vis');
+        }
+      });
+    },{threshold:.4});
+    slides.forEach(s=>obs.observe(s));
+  }
+
   function initSentimentChart(){
     const cv=document.getElementById('sentimentChart');if(!cv)return;
     const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
@@ -1390,7 +1461,7 @@
   function init(){
     const orgMap=new OrgMap(document.getElementById('orgCanvas'));orgMap.tick();
     initOpening(orgMap);buildTimeline();initScroll();initShowMore();
-    initEcosystem();initScenarioPlayer();initSentimentChart();initStats();
+    initEvolution();initSentimentChart();initStats();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
