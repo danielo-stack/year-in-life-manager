@@ -1341,16 +1341,16 @@
       {id:'talent',label:'Talent Moments',items:['Performance Reviews','Goal Setting','360 Feedback','Calibrations','Engagement Surveys'],x:.10,y:.12,color:C.talent,phase:'v1',isCard:true,cw:155,ch:95},
       {id:'org',label:'Org Context',items:['HRIS Data','Calendar Data','LMS Courses','Org Strategy','Market Signals'],x:.10,y:.62,color:C.ext,phase:'v1',isCard:true,cw:145,ch:95},
       {id:'collab',label:'Collab Intelligence',items:['Jordan','Priya','Alex','Sam','Tomás','Kai','Marcus','Lin'],x:.78,y:.62,color:C.collab,phase:'v2',isCard:true,cw:165,ch:105,isTeam:true},
-      {id:'orgi',label:'Org Intelligence',items:['Sentiment Analysis','Skills Assessment','Gap Analysis','Collab Themes','Engagement Trends'],x:.48,y:.02,color:C.others,phase:'orgi',isCard:true,cw:160,ch:95},
+      // orgi phase now shows the full org map instead of a card node
     ];
     const LINKS=[
       {a:'nadia',b:'maya',phase:'v1'},{a:'nadia',b:'talent',phase:'v1'},{a:'nadia',b:'org',phase:'v1'},
       {a:'nadia',b:'collab',phase:'v2'},{a:'maya',b:'collab',phase:'v2'},
-      {a:'nadia',b:'orgi',phase:'orgi'},
     ];
     const phaseOrder=['intro','v1','v2','orgi'];
     let currentPhase='intro';
     const dots=[];
+    let zoomOutT=0; // for orgi reverse-zoom animation
 
     function phaseIdx(p){return phaseOrder.indexOf(p)}
     function isVisible(p){return phaseIdx(p)<=phaseIdx(currentPhase)}
@@ -1375,11 +1375,137 @@
         p:0,s:.003+Math.random()*.005,col:a.isNadia?b.color:a.color,sz:2.5+Math.random()*2});
     }
 
+    function drawNode(ctx,n,w,h,alpha){
+      const px=n.x*w,py=n.y*h;
+      ctx.globalAlpha=alpha;
+      if(n.isNadia){
+        const g=ctx.createRadialGradient(px,py,n.r*.2,px,py,n.r+16);
+        g.addColorStop(0,n.color+'40');g.addColorStop(1,n.color+'00');
+        ctx.beginPath();ctx.arc(px,py,n.r+16,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
+        ctx.fillStyle=n.color+'45';ctx.fill();
+        ctx.shadowColor=n.color;ctx.shadowBlur=24;ctx.fill();ctx.shadowBlur=0;
+        ctx.strokeStyle=n.color+'70';ctx.lineWidth=2;ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='600 15px "Playfair Display"';ctx.textAlign='center';
+        ctx.fillText(n.label,px,py+5);
+      }else if(n.isCard){
+        const cw=n.cw,ch=n.ch,cx=px-cw/2,cy=py;
+        ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,8);
+        ctx.fillStyle=n.color+'0a';ctx.fill();
+        ctx.strokeStyle=n.color+'35';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.fillStyle=n.color;ctx.font='700 13px "DM Sans"';ctx.textAlign='left';
+        ctx.fillText(n.label,cx+12,cy+18);
+        if(n.isTeam){
+          ctx.font='600 9px "DM Sans"';
+          n.items.forEach((item,i)=>{
+            const row=Math.floor(i/4),col=i%4;
+            const ix=cx+18+col*38,iy=cy+36+row*26;
+            ctx.beginPath();ctx.arc(ix,iy,6,0,Math.PI*2);
+            ctx.fillStyle=n.color+'30';ctx.fill();ctx.strokeStyle=n.color+'50';ctx.lineWidth=.8;ctx.stroke();
+            ctx.fillStyle='rgba(255,255,255,.6)';ctx.textAlign='center';ctx.fillText(item,ix,iy+16);
+          });
+        }else{
+          ctx.font='400 10px "DM Sans"';ctx.fillStyle='rgba(255,255,255,.55)';
+          n.items.forEach((item,i)=>{ctx.textAlign='left';ctx.fillText('· '+item,cx+12,cy+34+i*14)});
+        }
+      }
+      ctx.globalAlpha=1;
+    }
+
+    // Reuse DEPTS/DEPT_LINKS from opening org map for zoom-out
+    function drawOrgMap(ctx,w,h,alpha){
+      ctx.globalAlpha=alpha;
+      DEPT_LINKS.forEach(([a,b])=>{
+        const da=DEPTS[a],db=DEPTS[b];
+        ctx.beginPath();ctx.moveTo(da.x*w,da.y*h);ctx.lineTo(db.x*w,db.y*h);
+        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=.8;ctx.stroke();
+      });
+      DEPTS.forEach(d=>{
+        const px=d.x*w,py=d.y*h;
+        ctx.beginPath();ctx.arc(px,py,d.r+10,0,Math.PI*2);
+        const g=ctx.createRadialGradient(px,py,d.r*.2,px,py,d.r+10);
+        g.addColorStop(0,d.color+'22');g.addColorStop(1,d.color+'00');
+        ctx.fillStyle=g;ctx.fill();
+        ctx.beginPath();ctx.arc(px,py,d.r,0,Math.PI*2);
+        ctx.fillStyle=d.color+'15';ctx.fill();
+        ctx.strokeStyle=d.color+'40';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='600 '+(d.r>25?'11':'9')+'px "DM Sans"';ctx.textAlign='center';
+        ctx.fillText(d.name,px,py+3);
+      });
+      ctx.globalAlpha=1;
+    }
+
+    // Org-level dots for zoom-out
+    const orgDots=[];
+    function spawnOrgDot(w,h){
+      if(orgDots.length>200)return;
+      const li=DEPT_LINKS[Math.random()*DEPT_LINKS.length|0];
+      const a=DEPTS[li[0]],b=DEPTS[li[1]];
+      const ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
+      const dx=bx-ax,dy=by-ay,len=Math.sqrt(dx*dx+dy*dy)||1;
+      const off=(.5+Math.random()*4)*(Math.random()>.5?1:-1);
+      orgDots.push({fx:ax,fy:ay,tx:bx,ty:by,cpx:(ax+bx)/2+(-dy/len)*off,cpy:(ay+by)/2+(dx/len)*off,p:0,s:.003+Math.random()*.005,col:a.color,sz:2.5+Math.random()*2});
+    }
+
     function draw(){
       const w=cv._w||500,h=cv._h||500;
       ctx.clearRect(0,0,w,h);
 
-      // Draw visible links
+      // Handle orgi phase: zoom out from cards to full org map
+      if(currentPhase==='orgi'){
+        zoomOutT=Math.min(zoomOutT+.006,1);
+        const ez=zoomOutT*zoomOutT*(3-2*zoomOutT); // smoothstep
+        const cardAlpha=Math.max(0,1-ez*2);
+        const orgAlpha=Math.max(0,Math.min(1,(ez-.2)/.5));
+
+        // Draw fading cards
+        if(cardAlpha>0){
+          ctx.globalAlpha=cardAlpha;
+          LINKS.filter(l=>isVisible(l.phase)&&l.phase!=='orgi').forEach(l=>{
+            const a=NODES.find(n=>n.id===l.a),b=NODES.find(n=>n.id===l.b);
+            const ac=nodeCenter(a,w,h),bc=nodeCenter(b,w,h);
+            ctx.beginPath();ctx.moveTo(ac.x,ac.y);ctx.lineTo(bc.x,bc.y);
+            ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
+          });
+          NODES.filter(n=>isVisible(n.phase)&&n.phase!=='orgi').forEach(n=>{
+            drawNode(ctx,n,w,h,cardAlpha);
+          });
+          ctx.globalAlpha=1;
+        }
+
+        // Draw appearing org map
+        if(orgAlpha>0){
+          drawOrgMap(ctx,w,h,orgAlpha);
+          for(let i=0;i<2;i++)spawnOrgDot(w,h);
+          for(let i=orgDots.length-1;i>=0;i--){
+            const d=orgDots[i];d.p+=d.s;
+            if(d.p>=1){orgDots.splice(i,1);continue}
+            const t=d.p;
+            const x=(1-t)*(1-t)*d.fx+2*(1-t)*t*d.cpx+t*t*d.tx;
+            const y=(1-t)*(1-t)*d.fy+2*(1-t)*t*d.cpy+t*t*d.ty;
+            let op=1;if(t<.1)op=t*10;else if(t>.85)op=(1-t)/.15;
+            ctx.globalAlpha=op*.6*orgAlpha;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);
+            ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=3;ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;
+          }
+        }
+
+        // Still draw card dots while fading
+        if(cardAlpha>0){
+          for(let i=dots.length-1;i>=0;i--){
+            const d=dots[i];d.p+=d.s;if(d.p>=1){dots.splice(i,1);continue}
+            const t=d.p;const x=(1-t)*(1-t)*d.fx+2*(1-t)*t*d.cpx+t*t*d.tx;const y=(1-t)*(1-t)*d.fy+2*(1-t)*t*d.cpy+t*t*d.ty;
+            let op=1;if(t<.1)op=t*10;else if(t>.85)op=(1-t)/.15;
+            ctx.globalAlpha=op*.4*cardAlpha;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);ctx.fillStyle=d.col;ctx.fill();ctx.globalAlpha=1;
+          }
+        }
+
+        requestAnimationFrame(draw);return;
+      }
+
+      // Reset zoom if not orgi
+      zoomOutT=0;orgDots.length=0;
+
+      // Normal drawing: visible links
       LINKS.filter(l=>isVisible(l.phase)).forEach(l=>{
         const a=NODES.find(n=>n.id===l.a),b=NODES.find(n=>n.id===l.b);
         const ac=nodeCenter(a,w,h),bc=nodeCenter(b,w,h);
@@ -1388,51 +1514,7 @@
       });
 
       // Draw visible nodes
-      NODES.filter(n=>isVisible(n.phase)).forEach(n=>{
-        const px=n.x*w,py=n.y*h;
-
-        if(n.isNadia){
-          // Nadia orb — glowing circle
-          const g=ctx.createRadialGradient(px,py,n.r*.2,px,py,n.r+16);
-          g.addColorStop(0,n.color+'40');g.addColorStop(1,n.color+'00');
-          ctx.beginPath();ctx.arc(px,py,n.r+16,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
-          ctx.fillStyle=n.color+'45';ctx.fill();
-          ctx.shadowColor=n.color;ctx.shadowBlur=24;ctx.fill();ctx.shadowBlur=0;
-          ctx.strokeStyle=n.color+'70';ctx.lineWidth=2;ctx.stroke();
-          ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='600 15px "Playfair Display"';ctx.textAlign='center';
-          ctx.fillText(n.label,px,py+5);
-        }else if(n.isCard){
-          // Rounded rectangle card with items
-          const cw=n.cw,ch=n.ch;
-          const cx=px-cw/2,cy=py;
-          ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,8);
-          ctx.fillStyle=n.color+'0a';ctx.fill();
-          ctx.strokeStyle=n.color+'35';ctx.lineWidth=1.2;ctx.stroke();
-          // Title
-          ctx.fillStyle=n.color;ctx.font='700 13px "DM Sans"';ctx.textAlign='left';
-          ctx.fillText(n.label,cx+12,cy+18);
-          // Items
-          if(n.isTeam){
-            ctx.font='600 9px "DM Sans"';
-            n.items.forEach((item,i)=>{
-              const row=Math.floor(i/4),col=i%4;
-              const ix=cx+18+col*38,iy=cy+36+row*26;
-              ctx.beginPath();ctx.arc(ix,iy,6,0,Math.PI*2);
-              ctx.fillStyle=n.color+'30';ctx.fill();
-              ctx.strokeStyle=n.color+'50';ctx.lineWidth=.8;ctx.stroke();
-              ctx.fillStyle='rgba(255,255,255,.6)';ctx.textAlign='center';
-              ctx.fillText(item,ix,iy+16);
-            });
-          }else{
-            ctx.font='400 10px "DM Sans"';ctx.fillStyle='rgba(255,255,255,.55)';
-            n.items.forEach((item,i)=>{
-              ctx.textAlign='left';
-              ctx.fillText('· '+item,cx+12,cy+34+i*14);
-            });
-          }
-        }
-      });
+      NODES.filter(n=>isVisible(n.phase)).forEach(n=>drawNode(ctx,n,w,h,1));
 
       // Spawn + draw dots
       for(let i=0;i<2;i++)spawnDot();
