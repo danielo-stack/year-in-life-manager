@@ -1325,71 +1325,113 @@
   }
 
   /* ═══════════════ SENTIMENT CHART ═══════════════ */
-  /* ═══════════════ EVOLUTION SCROLL ═══════════════ */
+  /* ═══════════════ EVOLUTION CANVAS ═══════════════ */
   function initEvolution(){
+    const cv=document.getElementById('evoCanvas');
     const slides=document.querySelectorAll('.evo-slide');
-    const nodes=document.querySelectorAll('.ev-node');
-    const linesSvg=document.getElementById('evLines');
-    if(!slides.length)return;
+    if(!cv||!slides.length)return;
+    const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
+    function resize(){const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);cv._w=r.width;cv._h=r.height}
+    resize();window.addEventListener('resize',resize);
 
-    let currentEvo='';
-
-    // Build SVG lines (connect Nadia center to each node)
-    // Nadia is at 50%,45% — we draw lines to each node position
-    const lineData=[
-      {to:'ev-maya',x1:50,y1:45,x2:88,y2:28,cls:'ev-line',show:'v1'},
-      {to:'ev-talent',x1:50,y1:45,x2:12,y2:22,cls:'ev-line',show:'v1'},
-      {to:'ev-org',x1:50,y1:45,x2:12,y2:64,cls:'ev-line',show:'v1'},
-      {to:'ev-collab',x1:50,y1:45,x2:88,y2:80,cls:'ev-line-collab',show:'v2'},
-      {to:'ev-orgi',x1:50,y1:45,x2:50,y2:12,cls:'ev-line-orgi',show:'orgi'},
+    // Nodes — each has a phase when it first appears
+    const NODES=[
+      {id:'nadia',label:'Nadia',x:.50,y:.45,r:32,color:C.nadia,phase:'intro',isNadia:true},
+      {id:'maya',label:'Maya',x:.82,y:.28,r:18,color:C.self,phase:'v1'},
+      {id:'talent',label:'Talent Moments',sub:'Reviews · Goals · 360s',x:.15,y:.20,r:20,color:C.talent,phase:'v1'},
+      {id:'org',label:'Org Context',sub:'HRIS · Calendar · LMS · Strategy',x:.15,y:.70,r:20,color:C.ext,phase:'v1'},
+      {id:'collab',label:'Collaboration Intelligence',sub:'Team dynamics · Preferences',x:.82,y:.72,r:20,color:C.collab,phase:'v2'},
+      {id:'orgi',label:'Org Intelligence',sub:'Sentiment · Skills · Gaps · Trends',x:.50,y:.08,r:18,color:C.others,phase:'orgi'},
     ];
-    linesSvg.innerHTML='';
-    lineData.forEach(l=>{
-      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',l.x1);line.setAttribute('y1',l.y1);
-      line.setAttribute('x2',l.x2);line.setAttribute('y2',l.y2);
-      line.setAttribute('class',l.cls);
-      line.dataset.evoShow=l.show;
-      linesSvg.appendChild(line);
-    });
-
-    const phases={
-      intro:'',
-      v1:'v1',
-      v2:'v2',
-      orgi:'orgi',
-    };
+    const LINKS=[
+      {a:'nadia',b:'maya',phase:'v1'},{a:'nadia',b:'talent',phase:'v1'},{a:'nadia',b:'org',phase:'v1'},
+      {a:'nadia',b:'collab',phase:'v2'},{a:'maya',b:'collab',phase:'v2'},
+      {a:'nadia',b:'orgi',phase:'orgi'},
+    ];
     const phaseOrder=['intro','v1','v2','orgi'];
+    let currentPhase='intro';
+    const dots=[];
 
-    function applyPhase(phase){
-      if(phase===currentEvo)return;
-      currentEvo=phase;
-      const idx=phaseOrder.indexOf(phase);
+    function phaseIdx(p){return phaseOrder.indexOf(p)}
+    function isVisible(p){return phaseIdx(p)<=phaseIdx(currentPhase)}
 
-      // Show/hide nodes based on which phases are active
-      nodes.forEach(n=>{
-        const showAt=n.dataset.evoShow;
-        const showIdx=phaseOrder.indexOf(showAt);
-        n.classList.toggle('vis',showIdx>=0&&showIdx<=idx);
-      });
-
-      // Show/hide lines
-      linesSvg.querySelectorAll('line').forEach(l=>{
-        const showAt=l.dataset.evoShow;
-        const showIdx=phaseOrder.indexOf(showAt);
-        l.classList.toggle('vis',showIdx>=0&&showIdx<=idx);
-      });
+    function spawnDot(){
+      if(dots.length>200)return;
+      const visLinks=LINKS.filter(l=>isVisible(l.phase));
+      if(!visLinks.length)return;
+      const link=visLinks[Math.random()*visLinks.length|0];
+      const a=NODES.find(n=>n.id===link.a),b=NODES.find(n=>n.id===link.b);
+      if(!a||!b)return;
+      const w=cv._w||500,h=cv._h||500;
+      const ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
+      const dx=bx-ax,dy=by-ay,len=Math.sqrt(dx*dx+dy*dy)||1;
+      const off=(1+Math.random()*5)*(Math.random()>.5?1:-1);
+      dots.push({fx:ax,fy:ay,tx:bx,ty:by,cpx:(ax+bx)/2+(-dy/len)*off,cpy:(ay+by)/2+(dx/len)*off,
+        p:0,s:.003+Math.random()*.005,col:a.isNadia?b.color:a.color,sz:2+Math.random()*2});
     }
 
+    function draw(){
+      const w=cv._w||500,h=cv._h||500;
+      ctx.clearRect(0,0,w,h);
+
+      // Draw visible links
+      LINKS.filter(l=>isVisible(l.phase)).forEach(l=>{
+        const a=NODES.find(n=>n.id===l.a),b=NODES.find(n=>n.id===l.b);
+        ctx.beginPath();ctx.moveTo(a.x*w,a.y*h);ctx.lineTo(b.x*w,b.y*h);
+        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;ctx.stroke();
+      });
+
+      // Draw visible nodes
+      NODES.filter(n=>isVisible(n.phase)).forEach(n=>{
+        const px=n.x*w,py=n.y*h;
+        // Glow
+        const g=ctx.createRadialGradient(px,py,n.r*.3,px,py,n.r+12);
+        g.addColorStop(0,n.color+'28');g.addColorStop(1,n.color+'00');
+        ctx.beginPath();ctx.arc(px,py,n.r+12,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        // Circle
+        ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
+        ctx.fillStyle=n.isNadia?n.color+'50':n.color+'18';ctx.fill();
+        ctx.strokeStyle=n.color+'55';ctx.lineWidth=n.isNadia?2:1.2;ctx.stroke();
+        if(n.isNadia){ctx.shadowColor=n.color;ctx.shadowBlur=20;ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
+        // Label
+        ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='600 13px "DM Sans"';ctx.textAlign='center';
+        ctx.fillText(n.label,px,py+n.r+18);
+        if(n.sub){ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='10px "DM Sans"';ctx.fillText(n.sub,px,py+n.r+32)}
+      });
+
+      // Spawn + draw dots
+      for(let i=0;i<2;i++)spawnDot();
+      for(let i=dots.length-1;i>=0;i--){
+        const d=dots[i];d.p+=d.s;
+        if(d.p>=1){dots.splice(i,1);continue}
+        const t=d.p;
+        const x=(1-t)*(1-t)*d.fx+2*(1-t)*t*d.cpx+t*t*d.tx;
+        const y=(1-t)*(1-t)*d.fy+2*(1-t)*t*d.cpy+t*t*d.ty;
+        let op=1;if(t<.1)op=t*10;else if(t>.85)op=(1-t)/.15;
+        ctx.globalAlpha=op*.6;ctx.beginPath();ctx.arc(x,y,d.sz,0,Math.PI*2);
+        ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=3;ctx.fill();
+        ctx.shadowBlur=0;ctx.globalAlpha=1;
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Scroll observer
     const obs=new IntersectionObserver(entries=>{
       entries.forEach(e=>{
         const card=e.target.querySelector('.op-card');
         if(e.isIntersecting){
           if(card)card.classList.add('vis');
           const phase=e.target.dataset.evo;
-          if(phase)applyPhase(phase);
+          if(phase&&phaseIdx(phase)>=phaseIdx(currentPhase)){currentPhase=phase;dots.length=0}
         }else{
           if(card)card.classList.remove('vis');
+          // Handle scrolling back
+          const phase=e.target.dataset.evo;
+          if(phase&&!e.isIntersecting&&e.boundingClientRect.top>0){
+            const prev=phaseOrder[Math.max(0,phaseIdx(phase)-1)];
+            if(phaseIdx(prev)<phaseIdx(currentPhase)){currentPhase=prev;dots.length=0}
+          }
         }
       });
     },{threshold:.4});

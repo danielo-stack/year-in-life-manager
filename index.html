@@ -209,59 +209,10 @@
         </div>
       </div>
 
-      <!-- Right: sticky diagram that builds up -->
+      <!-- Right: sticky canvas with flowing dots -->
       <div class="evo-viz-col">
         <div class="evo-viz" id="evoViz">
-          <!-- Nadia orb (always center) -->
-          <div class="ev-nadia">
-            <div class="eco-nadia-orb"></div>
-            <span class="ev-nadia-lbl">Nadia</span>
-          </div>
-
-          <!-- Maya (always present) -->
-          <div class="ev-node ev-maya" data-evo-show="v1">
-            <div class="ev-circle" style="background:var(--c-self);box-shadow:0 0 16px rgba(59,130,246,.25)"></div>
-            <span class="ev-name">Maya</span>
-          </div>
-
-          <!-- Talent Moments -->
-          <div class="ev-node ev-talent" data-evo-show="v1">
-            <div class="ev-icon-box" style="border-color:rgba(236,72,153,.3)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
-            </div>
-            <span class="ev-name" style="color:var(--c-talent)">Talent Moments</span>
-            <span class="ev-detail">Reviews · Goals · 360s · Calibrations</span>
-          </div>
-
-          <!-- Organizational Context -->
-          <div class="ev-node ev-org" data-evo-show="v1">
-            <div class="ev-icon-box" style="border-color:rgba(245,158,11,.3)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><circle cx="12" cy="6" r="3"/><circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><line x1="12" y1="9" x2="5" y2="13"/><line x1="12" y1="9" x2="19" y2="13"/></svg>
-            </div>
-            <span class="ev-name" style="color:var(--c-ext)">Org Context</span>
-            <span class="ev-detail">HRIS · Calendar · LMS · Strategy</span>
-          </div>
-
-          <!-- Collaboration Intelligence (v2) -->
-          <div class="ev-node ev-collab" data-evo-show="v2">
-            <div class="ev-icon-box ev-collab-box" style="border-color:rgba(16,185,129,.3)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><circle cx="12" cy="16" r="3"/><line x1="10.5" y1="9.5" x2="12" y2="13.5"/><line x1="13.5" y1="9.5" x2="12" y2="13.5"/><line x1="8" y1="11" x2="8" y2="13"/></svg>
-            </div>
-            <span class="ev-name" style="color:var(--c-collab)">Collaboration Intelligence</span>
-            <span class="ev-detail">Team dynamics · Preferences · Blind spots</span>
-          </div>
-
-          <!-- Organizational Intelligence (orgi) -->
-          <div class="ev-node ev-orgi" data-evo-show="orgi">
-            <div class="ev-icon-box" style="border-color:rgba(139,92,246,.3)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            </div>
-            <span class="ev-name" style="color:var(--c-others)">Org Intelligence</span>
-            <span class="ev-detail">Sentiment · Skills · Gaps · Trends</span>
-          </div>
-
-          <!-- Connection lines (drawn by CSS) -->
-          <svg class="ev-lines" id="evLines" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+          <canvas id="evoCanvas"></canvas>
         </div>
       </div>
     </div>
