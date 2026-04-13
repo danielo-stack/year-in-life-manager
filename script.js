@@ -1334,14 +1334,14 @@
     function resize(){const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);cv._w=r.width;cv._h=r.height}
     resize();window.addEventListener('resize',resize);
 
-    // Nodes — each has a phase when it first appears
+    // Nodes — cards with items inside
     const NODES=[
-      {id:'nadia',label:'Nadia',x:.50,y:.45,r:32,color:C.nadia,phase:'intro',isNadia:true},
-      {id:'maya',label:'Maya',x:.82,y:.28,r:18,color:C.self,phase:'v1'},
-      {id:'talent',label:'Talent Moments',sub:'Reviews · Goals · 360s',x:.15,y:.20,r:20,color:C.talent,phase:'v1'},
-      {id:'org',label:'Org Context',sub:'HRIS · Calendar · LMS · Strategy',x:.15,y:.70,r:20,color:C.ext,phase:'v1'},
-      {id:'collab',label:'Collaboration Intelligence',sub:'Team dynamics · Preferences',x:.82,y:.72,r:20,color:C.collab,phase:'v2'},
-      {id:'orgi',label:'Org Intelligence',sub:'Sentiment · Skills · Gaps · Trends',x:.50,y:.08,r:18,color:C.others,phase:'orgi'},
+      {id:'nadia',label:'Nadia',x:.50,y:.46,r:36,color:C.nadia,phase:'intro',isNadia:true},
+      {id:'maya',label:'Maya',sub:'Manager',x:.82,y:.24,r:22,color:C.self,phase:'v1',isCircle:true},
+      {id:'talent',label:'Talent Moments',items:['Performance Reviews','Goal Setting','360 Feedback','Calibrations','Engagement Surveys'],x:.14,y:.18,color:C.talent,phase:'v1',isCard:true,cw:130,ch:90},
+      {id:'org',label:'Org Context',items:['HRIS Data','Calendar','LMS','Org Strategy','Market Data'],x:.14,y:.68,color:C.ext,phase:'v1',isCard:true,cw:120,ch:90},
+      {id:'collab',label:'Collab Intelligence',items:['Jordan','Priya','Alex','Sam','Tomás','Kai','Marcus','Lin'],x:.80,y:.68,color:C.collab,phase:'v2',isCard:true,cw:140,ch:100,isTeam:true},
+      {id:'orgi',label:'Org Intelligence',items:['Sentiment Analysis','Skills Assessment','Gap Analysis','Collaboration Themes','Engagement Trends'],x:.50,y:.06,color:C.others,phase:'orgi',isCard:true,cw:140,ch:90},
     ];
     const LINKS=[
       {a:'nadia',b:'maya',phase:'v1'},{a:'nadia',b:'talent',phase:'v1'},{a:'nadia',b:'org',phase:'v1'},
@@ -1355,19 +1355,24 @@
     function phaseIdx(p){return phaseOrder.indexOf(p)}
     function isVisible(p){return phaseIdx(p)<=phaseIdx(currentPhase)}
 
+    function nodeCenter(n,w,h){
+      const px=n.x*w,py=n.y*h;
+      if(n.isCard)return{x:px,y:py+(n.ch||80)/2};
+      return{x:px,y:py};
+    }
     function spawnDot(){
-      if(dots.length>200)return;
+      if(dots.length>250)return;
       const visLinks=LINKS.filter(l=>isVisible(l.phase));
       if(!visLinks.length)return;
       const link=visLinks[Math.random()*visLinks.length|0];
       const a=NODES.find(n=>n.id===link.a),b=NODES.find(n=>n.id===link.b);
       if(!a||!b)return;
       const w=cv._w||500,h=cv._h||500;
-      const ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
-      const dx=bx-ax,dy=by-ay,len=Math.sqrt(dx*dx+dy*dy)||1;
+      const ac=nodeCenter(a,w,h),bc=nodeCenter(b,w,h);
+      const dx=bc.x-ac.x,dy=bc.y-ac.y,len=Math.sqrt(dx*dx+dy*dy)||1;
       const off=(1+Math.random()*5)*(Math.random()>.5?1:-1);
-      dots.push({fx:ax,fy:ay,tx:bx,ty:by,cpx:(ax+bx)/2+(-dy/len)*off,cpy:(ay+by)/2+(dx/len)*off,
-        p:0,s:.003+Math.random()*.005,col:a.isNadia?b.color:a.color,sz:2+Math.random()*2});
+      dots.push({fx:ac.x,fy:ac.y,tx:bc.x,ty:bc.y,cpx:(ac.x+bc.x)/2+(-dy/len)*off,cpy:(ac.y+bc.y)/2+(dx/len)*off,
+        p:0,s:.003+Math.random()*.005,col:a.isNadia?b.color:a.color,sz:2.5+Math.random()*2});
     }
 
     function draw(){
@@ -1377,26 +1382,68 @@
       // Draw visible links
       LINKS.filter(l=>isVisible(l.phase)).forEach(l=>{
         const a=NODES.find(n=>n.id===l.a),b=NODES.find(n=>n.id===l.b);
-        ctx.beginPath();ctx.moveTo(a.x*w,a.y*h);ctx.lineTo(b.x*w,b.y*h);
-        ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;ctx.stroke();
+        const ac=nodeCenter(a,w,h),bc=nodeCenter(b,w,h);
+        ctx.beginPath();ctx.moveTo(ac.x,ac.y);ctx.lineTo(bc.x,bc.y);
+        ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
       });
 
       // Draw visible nodes
       NODES.filter(n=>isVisible(n.phase)).forEach(n=>{
         const px=n.x*w,py=n.y*h;
-        // Glow
-        const g=ctx.createRadialGradient(px,py,n.r*.3,px,py,n.r+12);
-        g.addColorStop(0,n.color+'28');g.addColorStop(1,n.color+'00');
-        ctx.beginPath();ctx.arc(px,py,n.r+12,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-        // Circle
-        ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
-        ctx.fillStyle=n.isNadia?n.color+'50':n.color+'18';ctx.fill();
-        ctx.strokeStyle=n.color+'55';ctx.lineWidth=n.isNadia?2:1.2;ctx.stroke();
-        if(n.isNadia){ctx.shadowColor=n.color;ctx.shadowBlur=20;ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
-        // Label
-        ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='600 13px "DM Sans"';ctx.textAlign='center';
-        ctx.fillText(n.label,px,py+n.r+18);
-        if(n.sub){ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='10px "DM Sans"';ctx.fillText(n.sub,px,py+n.r+32)}
+
+        if(n.isNadia){
+          // Nadia orb — glowing circle
+          const g=ctx.createRadialGradient(px,py,n.r*.2,px,py,n.r+16);
+          g.addColorStop(0,n.color+'40');g.addColorStop(1,n.color+'00');
+          ctx.beginPath();ctx.arc(px,py,n.r+16,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
+          ctx.fillStyle=n.color+'45';ctx.fill();
+          ctx.shadowColor=n.color;ctx.shadowBlur=24;ctx.fill();ctx.shadowBlur=0;
+          ctx.strokeStyle=n.color+'70';ctx.lineWidth=2;ctx.stroke();
+          ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='600 15px "Playfair Display"';ctx.textAlign='center';
+          ctx.fillText(n.label,px,py+5);
+        }else if(n.isCircle){
+          // Maya — circle with label
+          const g=ctx.createRadialGradient(px,py,n.r*.3,px,py,n.r+10);
+          g.addColorStop(0,n.color+'30');g.addColorStop(1,n.color+'00');
+          ctx.beginPath();ctx.arc(px,py,n.r+10,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,n.r,0,Math.PI*2);
+          ctx.fillStyle=n.color+'25';ctx.fill();
+          ctx.strokeStyle=n.color+'50';ctx.lineWidth=1.5;ctx.stroke();
+          ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='600 13px "Playfair Display"';ctx.textAlign='center';
+          ctx.fillText(n.label,px,py+4);
+          if(n.sub){ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px "DM Sans"';ctx.fillText(n.sub,px,py+n.r+14)}
+        }else if(n.isCard){
+          // Rounded rectangle card with items
+          const cw=n.cw,ch=n.ch;
+          const cx=px-cw/2,cy=py;
+          ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,8);
+          ctx.fillStyle=n.color+'0a';ctx.fill();
+          ctx.strokeStyle=n.color+'35';ctx.lineWidth=1.2;ctx.stroke();
+          // Title
+          ctx.fillStyle=n.color;ctx.font='700 11px "DM Sans"';ctx.textAlign='left';
+          ctx.fillText(n.label,cx+10,cy+16);
+          // Items
+          if(n.isTeam){
+            // Draw team member mini-circles
+            ctx.font='500 8px "DM Sans"';
+            n.items.forEach((item,i)=>{
+              const row=Math.floor(i/4),col=i%4;
+              const ix=cx+14+col*32,iy=cy+30+row*22;
+              ctx.beginPath();ctx.arc(ix,iy,5,0,Math.PI*2);
+              ctx.fillStyle=n.color+'30';ctx.fill();
+              ctx.strokeStyle=n.color+'50';ctx.lineWidth=.8;ctx.stroke();
+              ctx.fillStyle='rgba(255,255,255,.55)';ctx.textAlign='center';
+              ctx.fillText(item,ix,iy+14);
+            });
+          }else{
+            ctx.font='400 9px "DM Sans"';ctx.fillStyle='rgba(255,255,255,.5)';
+            n.items.forEach((item,i)=>{
+              ctx.textAlign='left';
+              ctx.fillText('· '+item,cx+10,cy+30+i*13);
+            });
+          }
+        }
       });
 
       // Spawn + draw dots
