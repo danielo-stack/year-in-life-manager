@@ -164,13 +164,13 @@
       buckets:{external:'Layoff uncertainty navigated',maya:'Resilience strengthened'},
     },
     { month:11,name:'November',type:'pull',layers:['others'],
-      title:"Managing Marcus out",
-      brief:'The hardest conversation of Maya\'s year.',
-      refs:['All feedback history since March','Performance documentation','HR policy','Marcus profile','Maya\'s coaching trajectory'],
-      learns:['How Maya handles the most difficult management moment','Evidence-based decision-making'],
-      behavior:'Have the hardest conversation of your career — grounded in evidence, delivered with compassion',
-      nadia:["Maya, this is the conversation you've been building toward all year, even if you didn't know it. Managing someone out is the hardest thing a people leader does, and I want you to feel prepared — not just procedurally, but emotionally.","Let's look at what we have. Since March, there's a clear, documented pattern: Marcus has received specific feedback in three separate conversations, with concrete expectations set each time. The improvement has been minimal. This isn't a surprise to Marcus — he's been told what needed to change, he's been given time and support, and the gap remains. The documentation is thorough and defensible.","Here's what I want you to hold onto going into this conversation: this isn't about Marcus being a bad person. It's about a mismatch between the role and his strengths. The kindest thing you can do is be direct about that. I've drafted a conversation framework that leads with respect for his contributions, is specific about why this isn't working, and offers a clear path forward. You're ready for this in a way you absolutely were not in January — and that's because of every hard conversation you've had between then and now."],
-      buckets:{team:'Performance exit handled with full evidence'},
+      title:"Difficult conversation with Marcus",
+      brief:'Maya needs to have a direct conversation about role fit and next steps.',
+      refs:['Feedback history','Marcus profile','Maya\'s coaching trajectory'],
+      learns:['How Maya navigates difficult conversations','Growth in directness'],
+      behavior:'Have a direct, compassionate conversation about role alignment',
+      nadia:["Maya, I know this conversation feels heavy. Let me help you think through it. Based on what you've shared, there's a clear pattern: Marcus has received specific feedback in three separate conversations, with concrete expectations set each time. Progress has been limited. This isn't a surprise to either of you.","The coaching opportunity here is about role alignment — helping Marcus see where his strengths are strongest and where this particular role may not be the right fit. That's a different conversation than a performance critique. Lead with respect for his contributions, be specific about the gap, and be open about what the options look like.","You're ready for this in a way you weren't in January. Every hard conversation you've had this year has built the skill you need right now."],
+      buckets:{team:'Difficult conversation navigated with directness'},
     },
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
       isKeyMoment:true,keyNum:4,
@@ -181,7 +181,7 @@
       refs:['Full year of coaching context','Every interaction across all 8 reports','All talent milestones','Goal trajectories','Collaboration intelligence map'],
       learns:['Complete talent picture for each person','Year-long growth arcs','Team-level patterns'],
       behavior:'Write reviews from a full year of evidence — give every person the review they deserve',
-      nadia:["Maya, this is the moment where everything comes together. Year-end reviews for 8 people, including promotions that will happen and some that won't, comp conversations that may disappoint, and the Marcus exit that's still fresh.","Here's what's different for you this December versus any other manager doing this work: you're not starting from scratch, and you're not relying on what you can remember from the last two months. I have the full context for every person on your team — every coaching conversation, every piece of feedback given and received, every goal set and tracked, every dynamic observed.","For Jordan: the retention story is a success. The career conversation in July, the sustained investment since — document that arc. For Priya and Alex: the competition that could have derailed them became a growth opportunity when you restructured ownership and brought in Tomás and Kai. That's a leadership story worth telling. For Marcus: the exit was handled with integrity, and the documentation supports it. For the new arrivals: their integration during a reorg is already a data point on your leadership.","Every review I'm helping you draft is anchored in behavioral evidence, not impressions. That's what your team deserves, and it's what makes these conversations defensible, fair, and genuinely developmental."],
+      nadia:["Maya, this is the moment where everything comes together. Year-end reviews for 8 people — promotions, comp conversations, and developmental feedback all due in the same window.","Here's what's different for you this December: you're not starting from scratch, and you're not relying on what you can remember from the last two months. I have the full context for every person on your team — every coaching conversation, every piece of feedback given and received, every goal set and tracked, every dynamic observed.","For Jordan: the career conversation in July and the sustained investment since — document that arc. For Priya and Alex: the competition that could have derailed them became a growth opportunity when you restructured ownership. For Marcus: the role-fit conversation was handled with directness and care. For the new arrivals: their integration during a reorg is already a data point on your leadership.","Every review I'm helping you draft is anchored in behavioral evidence, not impressions. That's what your team deserves, and it's what makes these conversations fair and genuinely developmental."],
       buckets:{talent:'Year-end reviews from full context',team:'Every report fully understood'},
       collabInsight:'Full collaboration map complete',
     },
@@ -522,7 +522,7 @@
   function tagColor(text){
     const t=text.toLowerCase();
     if(t.includes('maya')||t.includes('leadership')||t.includes('growth')||t.includes('confidence')||t.includes('identity')||t.includes('resilience')||t.includes('perception')||t.includes('avoidance'))return C.self;
-    if(t.includes('team')||t.includes('jordan')||t.includes('priya')||t.includes('alex')||t.includes('sam')||t.includes('marcus')||t.includes('tomás')||t.includes('kai')||t.includes('lin')||t.includes('report')||t.includes('feedback')||t.includes('flight')||t.includes('dynamic')||t.includes('exit')||t.includes('engagement'))return C.others;
+    if(t.includes('team')||t.includes('jordan')||t.includes('priya')||t.includes('alex')||t.includes('sam')||t.includes('marcus')||t.includes('tomás')||t.includes('kai')||t.includes('lin')||t.includes('report')||t.includes('feedback')||t.includes('dynamic')||t.includes('engagement'))return C.others;
     if(t.includes('talent')||t.includes('goal')||t.includes('review')||t.includes('360')||t.includes('survey')||t.includes('calibr')||t.includes('high-potential'))return C.talent;
     if(t.includes('reorg')||t.includes('external')||t.includes('boss')||t.includes('mandate')||t.includes('ai ')||t.includes('layoff')||t.includes('hris')||t.includes('coverage')||t.includes('market'))return C.ext;
     if(t.includes('collab')||t.includes('pattern')||t.includes('social'))return C.collab;
@@ -732,7 +732,7 @@
     {month:8,type:'push',theme:'Convergence leadership',blind:'Using new arrivals to reset dynamics',change:'Expectations set from day one'},
     {month:9,type:'push',theme:'Processing 360 feedback',blind:'Cross-functional perception lag',change:'Growth since April visible in data'},
     {month:10,type:'push',theme:'Leading through uncertainty',blind:null,change:'Leaned on trust instead of smoothing over'},
-    {month:11,type:'pull',theme:'Managing someone out',blind:null,change:'Evidence-based exit with compassion'},
+    {month:11,type:'pull',theme:'Difficult conversation on role fit',blind:null,change:'Direct, compassionate conversation'},
     {month:12,type:'push',theme:'Year-end synthesis',blind:null,change:'Reviews from evidence, not memory'},
   ];
   let cjBlinds=0,cjChanges=0;
