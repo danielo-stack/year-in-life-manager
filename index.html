@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Year in the Life of a Manager — Valence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Password gate -->
+  <div id="passGate" style="position:fixed;inset:0;z-index:99999;background:#08081A;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+    <div style="font-family:'Crimson Pro',serif;font-size:1.4rem;color:rgba(255,255,255,.9)">Enter password</div>
+    <input id="passInput" type="password" placeholder="Password" autofocus
+      style="font-family:'DM Sans',sans-serif;font-size:1rem;padding:10px 18px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;outline:none;width:240px;text-align:center">
+    <div id="passError" style="font-size:.8rem;color:#EF4444;height:1em"></div>
+  </div>
+  <script>
+  (function(){
+    var g=document.getElementById('passGate'),i=document.getElementById('passInput'),e=document.getElementById('passError');
+    if(sessionStorage.getItem('_auth')==='1'){g.remove();return}
+    document.body.style.overflow='hidden';
+    i.addEventListener('keydown',function(ev){
+      if(ev.key==='Enter'){
+        if(i.value==='Nadia 2.0'){sessionStorage.setItem('_auth','1');g.remove();document.body.style.overflow=''}
+        else{e.textContent='Incorrect password';i.value='';i.focus()}
+      }
+    });
+  })();
+  </script>
+
+  <div class="scroll-bar" id="scrollBar"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OPENING — Split: narration left, viz right  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="opening" id="opening">
+    <div class="op-gradient" id="opGradient"></div>
+
+    <div class="op-split">
+      <!-- LEFT: Narration text (scrolls) -->
+      <div class="op-narr-col">
+        <div class="op-slide" data-phase="question">
+          <div class="op-card">
+            <p class="op-hero">Ask any senior talent leader what drives manager performance —</p>
+            <p class="op-sub">and they'll point to <strong>performance reviews, goal setting, calibrations</strong>. The structured talent moments HR has spent decades building.</p>
+          </div>
+        </div>
+        <div class="op-slide" data-phase="pivot">
+          <div class="op-card">
+            <p class="op-hero">But what actually drives performance is the <em>thousands of small moments</em> in between.</p>
+            <p class="op-sub">The Slack messages. The 1:1 check-ins. The tough feedback conversations. The quiet observations a manager makes — and never writes down.</p>
+          </div>
+        </div>
+        <div class="op-slide" data-phase="problem">
+          <div class="op-card">
+            <p class="op-hero">Our brains simply don't have the capacity.</p>
+            <p class="op-sub">We can't remember thousands of interactions, connect patterns across months, or hold the full context of every relationship on a team. We have recency bias. We anchor on the last few things. So HR built processes — reviews, surveys, 360s — to try to approximate those moments. But they're inherently lagging and incomplete.</p>
+            <p class="op-sub" style="margin-top:12px"><strong>AI does have that capacity.</strong> And that changes everything.</p>
+          </div>
+        </div>
+        <div class="op-slide" data-phase="opportunity">
+          <div class="op-card">
+            <p class="op-hero accent">Imagine you could influence each of those small moments — and make them 5, 10, or 20% better.</p>
+            <p class="op-sub accent-sub">That's what AI coaching at scale enables.</p>
+          </div>
+        </div>
+        <div class="op-slide" data-phase="nadia">
+          <div class="op-card nadia-intro-card">
+            <img src="nadia-logo.png" alt="Nadia" class="nadia-logo-img">
+            <p class="op-hero nadia-title">AI-first coaching is different</p>
+            <p class="op-sub">Nadia synthesizes deep knowledge of people and organizations with expert coaching expertise to answer any question at any time — and think ahead to give proactive support right when people need it.</p>
+            <p class="op-sub" style="margin-top:12px">She connects the dots that human memory can't — across every interaction, every relationship, every moment throughout the year.</p>
+          </div>
+        </div>
+        <div class="op-slide short" data-phase="begin">
+          <div class="op-card nadia-intro-card">
+            <p class="op-sub" style="text-align:center;opacity:.5">↑ Watch the connections form →</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Visualization (sticky) -->
+      <div class="op-viz-col">
+        <div class="op-viz">
+          <canvas id="particleCanvas"></canvas>
+          <div class="floating-quotes" id="floatingQuotes"></div>
+          <div class="node-labels" id="nodeLabels"></div>
+          <div class="tm-ring" id="tmRing">
+            <!-- Connection lines between talent moments (hexagon path) -->
+            <svg class="tm-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polygon points="50,4 92,24 92,72 50,92 8,72 8,24" fill="none" stroke="rgba(236,72,153,.15)" stroke-width=".3" stroke-dasharray="1.5,1"/>
+              <!-- Animated dot traveling the path -->
+              <circle r=".8" fill="#EC4899" opacity=".5">
+                <animateMotion dur="12s" repeatCount="indefinite" path="M50,4 L92,24 L92,72 L50,92 L8,72 L8,24 Z"/>
+              </circle>
+            </svg>
+            <div class="tm" style="top:4%;left:50%;transform:translateX(-50%)">Goal Setting</div>
+            <div class="tm" style="top:22%;right:4%">Mid-Year Review</div>
+            <div class="tm" style="bottom:22%;right:4%">360 Feedback</div>
+            <div class="tm" style="bottom:4%;left:50%;transform:translateX(-50%)">Year-End Review</div>
+            <div class="tm" style="bottom:22%;left:4%">Engagement Survey</div>
+            <div class="tm" style="top:22%;left:4%">Calibration</div>
+          </div>
+
+          <!-- Canvas for pink connecting lines animation -->
+          <canvas id="connectCanvas"></canvas>
+
+          <!-- Full-screen begin overlay (auto-fades in after connections) -->
+          <div class="begin-overlay" id="beginOverlay">
+            <p class="begin-text">Let's see how Maya, a new manager, has worked with Nadia throughout her first year.</p>
+            <p class="begin-cta" id="beginCta">Begin Maya's year ↓</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TIMELINE                                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="tl-section" id="tlSection">
+
+    <div class="tl-bar" id="tlBar">
+      <div class="tl-track">
+        <div class="tl-progress" id="tlProgress"></div>
+        <div class="tl-months" id="tlMonths"></div>
+      </div>
+    </div>
+
+    <div class="tl-layout">
+
+      <!-- Left: Combined sidebar — Integrations + Nadia's Knowledge -->
+      <div class="sidebar" id="sidebar">
+        <div class="sb-section">
+          <div class="sb-title">Integrations</div>
+          <div class="integ-list" id="integList">
+            <div class="integ-item integ-hidden" data-integ-month="1"><span class="integ-icon">📊</span>HRIS <span class="integ-sub">Org chart · Profiles · Leave</span></div>
+            <div class="integ-item integ-hidden" data-integ-month="1"><span class="integ-icon">📅</span>Calendar <span class="integ-sub">Meetings · 1:1s · Events</span></div>
+            <div class="integ-item integ-hidden" data-integ-month="3"><span class="integ-icon">💬</span>Teams / Slack <span class="integ-sub">Messages · Channels</span></div>
+            <div class="integ-item integ-hidden" data-integ-month="5"><span class="integ-icon">📧</span>Email <span class="integ-sub">Threads · Sentiment</span></div>
+            <div class="integ-item integ-hidden" data-integ-month="4"><span class="integ-icon">📚</span>LMS <span class="integ-sub">Courses · Completions</span></div>
+          </div>
+        </div>
+        <div class="sb-section">
+          <div class="sb-title">Nadia's Knowledge</div>
+          <div class="kb-total">
+            <div class="kb-total-num" id="totalDP">0</div>
+            <div class="kb-total-label">total data points</div>
+          </div>
+          <div class="kb" data-kb="maya">
+            <div class="kb-head"><span class="kb-dot" style="background:var(--c-self)"></span>Maya <span class="kb-count" id="countMaya">0</span><span class="kb-count-label">pts</span></div>
+            <div class="kb-progress"><div class="kb-bar" id="progMaya" style="background:var(--c-self)"></div></div>
+            <div class="kb-items collapsed" id="kbMaya"></div>
+            <button class="kb-more" data-kb-toggle="Maya">+ Show more</button>
+          </div>
+          <div class="kb" data-kb="team">
+            <div class="kb-head"><span class="kb-dot" style="background:var(--c-others)"></span>Maya's Team <span class="kb-count" id="countTeam">0</span><span class="kb-count-label">pts</span></div>
+            <div class="kb-progress"><div class="kb-bar" id="progTeam" style="background:var(--c-others)"></div></div>
+            <div class="kb-items collapsed" id="kbTeam"></div>
+            <button class="kb-more" data-kb-toggle="Team">+ Show more</button>
+          </div>
+          <div class="kb" data-kb="talent">
+            <div class="kb-head"><span class="kb-dot" style="background:var(--c-talent)"></span>Talent Moments <span class="kb-count" id="countTalent">0</span><span class="kb-count-label">pts</span></div>
+            <div class="kb-progress"><div class="kb-bar" id="progTalent" style="background:var(--c-talent)"></div></div>
+            <div class="kb-items collapsed" id="kbTalent"></div>
+            <button class="kb-more" data-kb-toggle="Talent">+ Show more</button>
+          </div>
+          <div class="kb" data-kb="external">
+            <div class="kb-head"><span class="kb-dot" style="background:var(--c-ext)"></span>Org Context <span class="kb-count" id="countExternal">0</span><span class="kb-count-label">pts</span></div>
+            <div class="kb-progress"><div class="kb-bar" id="progExternal" style="background:var(--c-ext)"></div></div>
+            <div class="kb-items collapsed" id="kbExternal"></div>
+            <button class="kb-more" data-kb-toggle="External">+ Show more</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Moments -->
+      <div class="moments-col" id="momentsCol"></div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- COLLABORATION INTELLIGENCE + NADIA 2.0      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="ci-section" id="ciSection">
+    <p class="ci-lead" data-reveal>But what if we could connect all of these dots?</p>
+    <p class="ci-lead2" data-reveal>At Valence, we call this <strong>Collaboration Intelligence</strong> — and it's what powers Nadia 2.0.</p>
+    <p class="ci-tagline" data-reveal>Collaboration Intelligence is Nadia's ability to understand how people actually work together — their dynamics, preferences, blind spots, and strengths — so she can proactively help every person in the organization collaborate better, lead more effectively, and grow faster than they ever could alone.</p>
+
+    <div class="nadia-eco" id="nadiaEco">
+      <canvas id="ecoCanvas"></canvas>
+
+      <!-- Left: stacked sources -->
+      <div class="eco-bucket eco-ext" id="ecoExt" style="border-color:rgba(245,158,11,.3)">
+        <div class="eco-bk-label" style="color:var(--c-ext)">Organizational Context</div>
+        <div class="eco-bk-items">AI mandate · Reorg · Layoffs · Cost reduction · Market pressure · Org strategy</div>
+      </div>
+      <div class="eco-bucket eco-talent" id="ecoTalent" style="border-color:rgba(236,72,153,.3)">
+        <div class="eco-bk-label" style="color:var(--c-talent)">Talent Moments</div>
+        <div class="eco-bk-items">Goal setting · Reviews · Engagement survey · 360 feedback · Calibrations</div>
+      </div>
+
+      <!-- Org Intelligence (above Nadia) -->
+      <div class="eco-bucket eco-orgi" id="ecoOrgI" style="border-color:rgba(139,92,246,.3)">
+        <div class="eco-bk-label" style="color:var(--c-others)">Organizational Intelligence</div>
+        <div class="eco-bk-items">Sentiment analysis · Skills assessments · Collaboration themes · Blind spots · Engagement trends</div>
+      </div>
+
+      <!-- Nadia orb (center) -->
+      <div class="eco-nadia" id="ecoNadia">
+        <div class="eco-nadia-orb"></div>
+        <span class="eco-nadia-label">Nadia</span>
+        <span class="eco-nadia-sub">Synthesizing millions of signals</span>
+      </div>
+
+      <!-- Team (below Nadia) — LARGER with CI definition -->
+      <div class="eco-team" id="ecoTeam">
+        <div class="eco-team-inner">
+          <div class="eco-team-label">Maya's Team</div>
+          <div class="eco-team-cards">
+            <div class="eco-card">Jordan</div><div class="eco-card">Priya</div><div class="eco-card">Alex</div><div class="eco-card">Sam</div>
+            <div class="eco-card">Tomás</div><div class="eco-card">Kai</div><div class="eco-card">Marcus</div><div class="eco-card">Lin</div>
+          </div>
+        </div>
+        <div class="eco-ci-badge">
+          <span class="eco-ci-dot"></span>
+          Collaboration Intelligence
+        </div>
+      </div>
+
+      <!-- Maya (right) -->
+      <div class="eco-maya" id="ecoMaya">
+        <div class="eco-maya-circle"></div>
+        <span class="eco-maya-name">Maya</span>
+      </div>
+
+      <!-- Scenario info bits — labels positioned ON the diagram by JS -->
+      <div class="sc-bits" id="scBits"></div>
+    </div>
+
+    <!-- Scenario tabs -->
+    <div class="sc-controls" id="scenarioPlayer" data-reveal>
+      <div class="sc-title">See it in action</div>
+      <div class="sc-tab-groups">
+        <div class="sc-tab-group">
+          <div class="sc-tab-group-label">Maya asks Nadia</div>
+          <div class="sc-tab-row">
+            <button class="sc-tab" data-sc="0">Framing feedback</button>
+            <button class="sc-tab" data-sc="1">Calibration prep</button>
+          </div>
+        </div>
+        <div class="sc-tab-group">
+          <div class="sc-tab-group-label">Nadia reaches out to Maya</div>
+          <div class="sc-tab-row">
+            <button class="sc-tab" data-sc="2">Reorg onboarding</button>
+            <button class="sc-tab" data-sc="3">Goal setting nudge</button>
+          </div>
+        </div>
+      </div>
+      <button class="sc-tab sc-tab-close" id="scClose" style="display:none">✕ Reset</button>
+    </div>
+
+    <!-- Maya question + Nadia response (appears when scenario is active) -->
+    <div class="sc-response-area" id="scResponseArea" style="display:none">
+      <div class="sc-q-card" id="scQuestion"></div>
+      <div class="sc-n-card" id="scNadiaBox"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ORG INTELLIGENCE LAYER                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="org-section" id="orgSection">
+    <p class="org-lead" data-reveal>Now imagine Nadia had this awareness across the entire organization.</p>
+    <p class="org-lead2" data-reveal>She could understand how people actually work — and spot organizational gaps before they even materialize.</p>
+
+    <div class="org-header" data-reveal>
+      <div class="org-title-row">
+        <div class="org-orb-small"></div>
+        <div>
+          <h2>Leadership Command Center</h2>
+          <p class="org-sub">Real-time coaching intelligence across your entire organization</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="org-stats" data-reveal>
+      <div class="org-stat"><span class="org-stat-num">32,102</span><span class="org-stat-lbl">Active employees</span></div>
+      <div class="org-stat"><span class="org-stat-num">4.2</span><span class="org-stat-lbl">Avg sessions / mo</span></div>
+      <div class="org-stat"><span class="org-stat-num">1,847</span><span class="org-stat-lbl">Insights this week</span></div>
+      <div class="org-stat"><span class="org-stat-num">1,092</span><span class="org-stat-lbl">360s this month</span></div>
+    </div>
+
+    <div class="org-grid">
+      <div class="org-card org-sentiment" data-reveal>
+        <h3>Organizational Sentiment</h3>
+        <p class="org-sent-score">Current: <strong>+3.2</strong> <span class="org-trend-up">↑ 0.8</span></p>
+        <div class="org-chart-wrap"><canvas id="sentimentChart"></canvas></div>
+      </div>
+
+      <div class="org-card" data-reveal>
+        <h3>Coaching In Action</h3>
+        <p class="org-live-count">6,847 interactions this week</p>
+        <div class="org-activity">
+          <div class="org-act"><span class="org-dot" style="background:var(--c-nadia)"></span>1,847 proactive insights surfaced<span class="org-time">2m</span></div>
+          <div class="org-act"><span class="org-dot" style="background:var(--c-self)"></span>523 difficult conversation coaching<span class="org-time">14m</span></div>
+          <div class="org-act"><span class="org-dot" style="background:var(--c-ext)"></span>247 cross-functional alignment flags<span class="org-time">32m</span></div>
+          <div class="org-act"><span class="org-dot" style="background:var(--c-collab)"></span>1,092 360 feedback completed<span class="org-time">1h</span></div>
+        </div>
+      </div>
+
+      <div class="org-card" data-reveal>
+        <h3>Where Teams Are Struggling</h3>
+        <div class="org-driver-item neg">
+          <strong>Post-reorg burnout</strong> <span class="org-imp neg">-0.8</span>
+          <p>Shortened 1:1s, canceled coaching, "overwhelmed" language spiking</p>
+        </div>
+        <div class="org-driver-item neg">
+          <strong>Strategy not landing</strong> <span class="org-imp neg">-0.5</span>
+          <p>"I don't know how to explain this reorg to my team"</p>
+        </div>
+      </div>
+
+      <div class="org-card" data-reveal>
+        <h3>Where Teams Are Thriving</h3>
+        <div class="org-driver-item pos">
+          <strong>Growth mindset taking hold</strong> <span class="org-imp pos">+0.9</span>
+          <p>608 managers actively building this skill — up 12%</p>
+        </div>
+        <div class="org-driver-item pos">
+          <strong>Accountability strengthening</strong> <span class="org-imp pos">+0.8</span>
+          <p>461 managers practicing accountability behaviors</p>
+        </div>
+      </div>
+
+      <div class="org-card org-wide" data-reveal>
+        <h3>Skills Intelligence</h3>
+        <div class="org-skills-grid">
+          <div>
+            <h4>Top Skills Being Built</h4>
+            <div class="org-sk"><span>Problem Solving</span><span class="org-sk-v">+8.3%</span><div class="org-sk-bar"><div style="width:83%;background:var(--c-collab)"></div></div></div>
+            <div class="org-sk"><span>Communication</span><span class="org-sk-v">+7.1%</span><div class="org-sk-bar"><div style="width:71%;background:var(--c-collab)"></div></div></div>
+            <div class="org-sk"><span>Strategic Thinking</span><span class="org-sk-v">+4.8%</span><div class="org-sk-bar"><div style="width:48%;background:var(--c-collab)"></div></div></div>
+          </div>
+          <div>
+            <h4>Top Skill Gaps</h4>
+            <div class="org-sk"><span>Data Analysis</span><span class="org-sk-v">34% gap</span><div class="org-sk-bar"><div style="width:34%;background:var(--c-ext)"></div></div></div>
+            <div class="org-sk"><span>Financial Acumen</span><span class="org-sk-v">31% gap</span><div class="org-sk-bar"><div style="width:31%;background:var(--c-ext)"></div></div></div>
+            <div class="org-sk"><span>Strategic Thinking</span><span class="org-sk-v">26% ↓41%</span><div class="org-sk-bar"><div style="width:26%;background:var(--c-collab)"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="closing-section" id="closing">
+    <div class="c-brand" data-reveal>
+      <div class="brand-name">Valence</div>
+      <a href="#" class="cta-btn">See Nadia in Action</a>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
