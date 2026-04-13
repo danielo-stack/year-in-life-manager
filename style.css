@@ -270,7 +270,19 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 .org-sent-score strong{font-size:1.1rem;color:var(--text)}
 .org-trend-up{color:var(--c-collab);font-size:.8rem;font-weight:600}
 .org-chart-wrap{height:140px;border-radius:8px;overflow:hidden}
-#sentimentChart{width:100%;height:100%}
+.org-chart-lg{height:220px}
+#sentimentChart,#skillScatter,#collabThemes{width:100%;height:100%}
+
+/* Sentiment driver bars */
+.org-drivers-viz{display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.org-driver-bar{position:relative;height:28px;background:rgba(255,255,255,.03);border-radius:4px;display:flex;align-items:center;overflow:hidden}
+.odb-fill{height:100%;border-radius:4px;transition:width 1s var(--ease)}
+.odb-fill.pos{background:rgba(16,185,129,.15)}
+.odb-fill.neg{background:rgba(239,68,68,.12)}
+.odb-lbl{position:absolute;left:10px;font-size:11px;font-weight:600;color:var(--text-dim);z-index:1}
+.odb-val{position:absolute;right:10px;font-family:var(--font-m);font-size:10px;font-weight:700;z-index:1}
+.odb-val.pos{color:var(--c-collab)}
+.odb-val.neg{color:#EF4444}
 
 .org-live-count{font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 .org-activity{display:flex;flex-direction:column;gap:8px}

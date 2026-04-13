@@ -1489,6 +1489,100 @@
     });
   }
 
+  /* ═══════════════ SKILL SCATTER PLOT ═══════════════ */
+  function initSkillScatter(){
+    const cv=document.getElementById('skillScatter');if(!cv)return;
+    const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
+    const rect=cv.parentElement.getBoundingClientRect();
+    cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const w=rect.width,h=rect.height;
+    const pad={l:40,r:16,t:16,b:32};
+    const pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+
+    // Skills: {name, developing%, needing%, color}
+    const skills=[
+      {name:'Data Analysis',dev:12,need:34,col:'#EF4444'},
+      {name:'Financial',dev:14,need:31,col:'#EF4444'},
+      {name:'Change Mgmt',dev:16,need:25,col:'#EF4444'},
+      {name:'Leadership',dev:26,need:22,col:'#F59E0B'},
+      {name:'Strategic',dev:34,need:27,col:'#F59E0B'},
+      {name:'Project Mgmt',dev:24,need:18,col:'#6B7280'},
+      {name:'Cross-functional',dev:27,need:11,col:'#10B981'},
+      {name:'Digital Literacy',dev:30,need:10,col:'#10B981'},
+      {name:'Problem Solving',dev:33,need:8,col:'#10B981'},
+      {name:'Communication',dev:36,need:12,col:'#10B981'},
+    ];
+
+    // Axes
+    ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.5;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,h-pad.b);ctx.lineTo(w-pad.r,h-pad.b);ctx.stroke();
+    // Quadrant lines
+    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,255,255,.06)';
+    const midX=pad.l+pw*.55,midY=pad.t+ph*.5;
+    ctx.beginPath();ctx.moveTo(midX,pad.t);ctx.lineTo(midX,h-pad.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,midY);ctx.lineTo(w-pad.r,midY);ctx.stroke();
+    ctx.setLineDash([]);
+    // Quadrant labels
+    ctx.fillStyle='rgba(255,255,255,.08)';ctx.font='8px "DM Sans"';
+    ctx.fillText('High need, Under-served',pad.l+8,pad.t+14);
+    ctx.textAlign='right';ctx.fillText('Investing + High need',w-pad.r-4,pad.t+14);ctx.textAlign='left';
+    // Axis labels
+    ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='9px "DM Sans"';ctx.textAlign='center';
+    ctx.fillText('% Actively Developing →',pad.l+pw/2,h-4);
+    ctx.save();ctx.translate(10,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('% Needing Support →',0,0);ctx.restore();
+
+    // Plot dots
+    skills.forEach(s=>{
+      const x=pad.l+(s.dev/42)*pw;
+      const y=h-pad.b-((s.need/42)*ph);
+      ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fillStyle=s.col;ctx.shadowColor=s.col;ctx.shadowBlur=6;ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='9px "DM Sans"';ctx.textAlign='center';
+      ctx.fillText(s.name,x,y-10);
+    });
+  }
+
+  /* ═══════════════ COLLABORATION THEMES CHART ═══════════════ */
+  function initCollabThemes(){
+    const cv=document.getElementById('collabThemes');if(!cv)return;
+    const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
+    const rect=cv.parentElement.getBoundingClientRect();
+    cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const w=rect.width,h=rect.height;
+
+    // Network visualization of collaboration themes
+    const themes=[
+      {name:'Feedback culture',x:.3,y:.25,r:24,col:'#EC4899'},
+      {name:'Cross-team trust',x:.7,y:.2,r:20,col:'#3B82F6'},
+      {name:'Decision speed',x:.5,y:.5,r:28,col:'#8B5CF6'},
+      {name:'Meeting efficiency',x:.2,y:.65,r:18,col:'#F59E0B'},
+      {name:'Knowledge sharing',x:.75,y:.65,r:22,col:'#10B981'},
+      {name:'Conflict resolution',x:.45,y:.8,r:16,col:'#EF4444'},
+    ];
+    const links=[[0,2],[1,2],[2,3],[2,4],[3,5],[4,5],[0,1],[1,4]];
+
+    // Draw links
+    links.forEach(([a,b])=>{
+      const ta=themes[a],tb=themes[b];
+      ctx.beginPath();ctx.moveTo(ta.x*w,ta.y*h);ctx.lineTo(tb.x*w,tb.y*h);
+      ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;ctx.stroke();
+    });
+
+    // Draw theme nodes
+    themes.forEach(t=>{
+      const px=t.x*w,py=t.y*h;
+      ctx.beginPath();ctx.arc(px,py,t.r,0,Math.PI*2);
+      const g=ctx.createRadialGradient(px,py,t.r*.2,px,py,t.r);
+      g.addColorStop(0,t.col+'30');g.addColorStop(1,t.col+'08');
+      ctx.fillStyle=g;ctx.fill();
+      ctx.strokeStyle=t.col+'40';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='600 9px "DM Sans"';ctx.textAlign='center';
+      ctx.fillText(t.name,px,py+3);
+    });
+  }
+
   /* ═══════════════ STAT COUNTERS ═══════════════ */
   function initStats(){
     const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(!en.isIntersecting)return;
@@ -1503,7 +1597,7 @@
   function init(){
     const orgMap=new OrgMap(document.getElementById('orgCanvas'));orgMap.tick();
     initOpening(orgMap);buildTimeline();initScroll();initShowMore();
-    initEvolution();initSentimentChart();initStats();
+    initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

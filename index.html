@@ -222,15 +222,12 @@
   <!-- ORG INTELLIGENCE LAYER                      -->
   <!-- ═══════════════════════════════════════════ -->
   <section class="org-section" id="orgSection">
-    <p class="org-lead" data-reveal>Now imagine Nadia had this awareness across the entire organization.</p>
-    <p class="org-lead2" data-reveal>She could understand how people actually work — and spot organizational gaps before they even materialize.</p>
-
     <div class="org-header" data-reveal>
       <div class="org-title-row">
         <div class="org-orb-small"></div>
         <div>
-          <h2>Leadership Command Center</h2>
-          <p class="org-sub">Real-time coaching intelligence across your entire organization</p>
+          <h2>Organizational Intelligence</h2>
+          <p class="org-sub">Real-time patterns across 32,000+ employees</p>
         </div>
       </div>
     </div>
@@ -238,67 +235,37 @@
     <div class="org-stats" data-reveal>
       <div class="org-stat"><span class="org-stat-num">32,102</span><span class="org-stat-lbl">Active employees</span></div>
       <div class="org-stat"><span class="org-stat-num">4.2</span><span class="org-stat-lbl">Avg sessions / mo</span></div>
-      <div class="org-stat"><span class="org-stat-num">1,847</span><span class="org-stat-lbl">Insights this week</span></div>
-      <div class="org-stat"><span class="org-stat-num">1,092</span><span class="org-stat-lbl">360s this month</span></div>
+      <div class="org-stat"><span class="org-stat-num">1,847</span><span class="org-stat-lbl">Proactive insights / wk</span></div>
+      <div class="org-stat"><span class="org-stat-num">6,847</span><span class="org-stat-lbl">Coaching interactions / wk</span></div>
     </div>
 
     <div class="org-grid">
-      <div class="org-card org-sentiment" data-reveal>
-        <h3>Organizational Sentiment</h3>
-        <p class="org-sent-score">Current: <strong>+3.2</strong> <span class="org-trend-up">↑ 0.8</span></p>
-        <div class="org-chart-wrap"><canvas id="sentimentChart"></canvas></div>
-      </div>
-
-      <div class="org-card" data-reveal>
-        <h3>Coaching In Action</h3>
-        <p class="org-live-count">6,847 interactions this week</p>
-        <div class="org-activity">
-          <div class="org-act"><span class="org-dot" style="background:var(--c-nadia)"></span>1,847 proactive insights surfaced<span class="org-time">2m</span></div>
-          <div class="org-act"><span class="org-dot" style="background:var(--c-self)"></span>523 difficult conversation coaching<span class="org-time">14m</span></div>
-          <div class="org-act"><span class="org-dot" style="background:var(--c-ext)"></span>247 cross-functional alignment flags<span class="org-time">32m</span></div>
-          <div class="org-act"><span class="org-dot" style="background:var(--c-collab)"></span>1,092 360 feedback completed<span class="org-time">1h</span></div>
-        </div>
-      </div>
-
-      <div class="org-card" data-reveal>
-        <h3>Where Teams Are Struggling</h3>
-        <div class="org-driver-item neg">
-          <strong>Post-reorg burnout</strong> <span class="org-imp neg">-0.8</span>
-          <p>Shortened 1:1s, canceled coaching, "overwhelmed" language spiking</p>
-        </div>
-        <div class="org-driver-item neg">
-          <strong>Strategy not landing</strong> <span class="org-imp neg">-0.5</span>
-          <p>"I don't know how to explain this reorg to my team"</p>
-        </div>
-      </div>
-
-      <div class="org-card" data-reveal>
-        <h3>Where Teams Are Thriving</h3>
-        <div class="org-driver-item pos">
-          <strong>Growth mindset taking hold</strong> <span class="org-imp pos">+0.9</span>
-          <p>608 managers actively building this skill — up 12%</p>
-        </div>
-        <div class="org-driver-item pos">
-          <strong>Accountability strengthening</strong> <span class="org-imp pos">+0.8</span>
-          <p>461 managers practicing accountability behaviors</p>
-        </div>
-      </div>
-
+      <!-- Sentiment over time (large chart) -->
       <div class="org-card org-wide" data-reveal>
-        <h3>Skills Intelligence</h3>
-        <div class="org-skills-grid">
-          <div>
-            <h4>Top Skills Being Built</h4>
-            <div class="org-sk"><span>Problem Solving</span><span class="org-sk-v">+8.3%</span><div class="org-sk-bar"><div style="width:83%;background:var(--c-collab)"></div></div></div>
-            <div class="org-sk"><span>Communication</span><span class="org-sk-v">+7.1%</span><div class="org-sk-bar"><div style="width:71%;background:var(--c-collab)"></div></div></div>
-            <div class="org-sk"><span>Strategic Thinking</span><span class="org-sk-v">+4.8%</span><div class="org-sk-bar"><div style="width:48%;background:var(--c-collab)"></div></div></div>
-          </div>
-          <div>
-            <h4>Top Skill Gaps</h4>
-            <div class="org-sk"><span>Data Analysis</span><span class="org-sk-v">34% gap</span><div class="org-sk-bar"><div style="width:34%;background:var(--c-ext)"></div></div></div>
-            <div class="org-sk"><span>Financial Acumen</span><span class="org-sk-v">31% gap</span><div class="org-sk-bar"><div style="width:31%;background:var(--c-ext)"></div></div></div>
-            <div class="org-sk"><span>Strategic Thinking</span><span class="org-sk-v">26% ↓41%</span><div class="org-sk-bar"><div style="width:26%;background:var(--c-collab)"></div></div></div>
-          </div>
+        <h3>Organizational Sentiment</h3>
+        <div class="org-chart-wrap org-chart-lg"><canvas id="sentimentChart"></canvas></div>
+      </div>
+
+      <!-- Skill Need vs Investment scatter plot -->
+      <div class="org-card org-wide" data-reveal>
+        <h3>Skill Need vs Investment</h3>
+        <div class="org-chart-wrap org-chart-lg"><canvas id="skillScatter"></canvas></div>
+      </div>
+
+      <!-- Collaboration themes + Sentiment drivers side by side -->
+      <div class="org-card" data-reveal>
+        <h3>Collaboration Themes</h3>
+        <div class="org-chart-wrap"><canvas id="collabThemes"></canvas></div>
+      </div>
+
+      <div class="org-card" data-reveal>
+        <h3>Sentiment Drivers</h3>
+        <div class="org-drivers-viz">
+          <div class="org-driver-bar"><div class="odb-fill pos" style="width:72%"></div><span class="odb-lbl">Growth mindset</span><span class="odb-val pos">+0.9</span></div>
+          <div class="org-driver-bar"><div class="odb-fill pos" style="width:64%"></div><span class="odb-lbl">Accountability</span><span class="odb-val pos">+0.8</span></div>
+          <div class="org-driver-bar"><div class="odb-fill pos" style="width:48%"></div><span class="odb-lbl">Cross-team trust</span><span class="odb-val pos">+0.5</span></div>
+          <div class="org-driver-bar neg"><div class="odb-fill neg" style="width:56%"></div><span class="odb-lbl">Post-reorg burnout</span><span class="odb-val neg">-0.8</span></div>
+          <div class="org-driver-bar neg"><div class="odb-fill neg" style="width:40%"></div><span class="odb-lbl">Strategy clarity</span><span class="odb-val neg">-0.5</span></div>
         </div>
       </div>
     </div>
