@@ -54,8 +54,9 @@
     { month:1,name:'January',type:'pull',layers:['self','others'],
       isKeyMoment:true,keyNum:1,
       keyTitle:'The Arrival',keySub:'She already knew what Maya was walking into.',
+      keyContext:'Maya was just promoted from IC to manager. She hasn\'t opened Nadia yet — she\'s been in back-to-back calendar blocks since 8am. She\'s managing 8 people who were her peers last week, including Jordan, who also wanted the role.',
       title:"First day as manager",
-      brief:'Nadia reaches out before Maya even opens the app — with a personalized transition plan built from HRIS data, calendar, and prior coaching context.',
+      brief:'Nadia reaches out first via Teams — with a personalized transition plan built from HRIS data, calendar patterns, company onboarding standards, and prior coaching context.',
       refs:['Maya\'s profile','Org chart','Team history'],
       learns:['Maya\'s leadership style','Peer-to-manager dynamics'],
       behavior:'Have a direct, early conversation with Jordan instead of letting tension build',
@@ -74,8 +75,9 @@
     { month:2,name:'February',type:'pull',layers:['others'],
       isKeyMoment:true,keyNum:2,
       keyTitle:'The Redirect',keySub:'What you\'re about to do won\'t help her.',
+      keyContext:'Priya missed a client deadline. Maya spent 40 minutes writing a feedback message. She thinks it\'s good — but it\'s wrapped in so much softening language that the actual feedback is invisible.',
       title:"Feedback to Priya",
-      brief:'Maya drafts a soft feedback message. Nadia pushes back — drawing on Priya\'s collaboration profile, Maya\'s feedback pattern, and the org\'s own values.',
+      brief:'Maya brings her draft to Nadia. Nadia pushes back — drawing on Priya\'s collaboration profile, Maya\'s three-month pattern of softening feedback, and the org\'s own stated value of "Honest Directness."',
       refs:['Priya\'s profile','Maya\'s coaching history','Performance data'],
       learns:['Maya-Priya relationship','Feedback delivery patterns'],
       behavior:'Deliver specific, evidence-based feedback instead of vague reassurance',
@@ -133,8 +135,9 @@
     { month:8,name:'August',type:'push',layers:['self','others','talent','ext','collab'],isConvergence:true,
       isKeyMoment:true,keyNum:4,
       keyTitle:'The Convergence',keySub:'She saw it before Maya did.',
+      keyContext:'A department is dissolved. Kai is being absorbed onto Maya\'s team — someone who didn\'t choose to be here. Meanwhile: Sam is on leave, Jordan\'s situation is still developing, the Priya-Alex dynamic is fragile, and the AI mandate is live.',
       title:"Everything converges",
-      brief:'Kai joins from a restructured department. Nadia sees a calendar change and immediately understands its significance — because she\'s been carrying the full context of Maya\'s year.',
+      brief:'Maya adds Kai to her calendar. Nadia sees a routine change and immediately understands its full significance — because she\'s been carrying the context of Maya\'s entire year across every layer.',
       refs:['All prior context','Tomás & Kai profiles','Reorg data','AI adoption status','Team dynamics map'],
       learns:['Full team dynamics shift','Change absorption capacity','Maya\'s leadership growth'],
       behavior:'Lead through converging pressures with the clarity you\'ve built all year',
@@ -172,8 +175,9 @@
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
       isKeyMoment:true,keyNum:3,
       keyTitle:'The Evidence',keySub:'You don\'t have to remember everything. I did.',
+      keyContext:'It\'s December. Performance review season. Maya has 8 reviews due in two weeks. She hasn\'t kept a running notes doc — she\'s been meaning to all year.',
       title:"Year-end reviews",
-      brief:'8 reviews due in two weeks. Nadia has already drafted 75% of each one — from a full year of accumulated context. She asks Maya for the last 25%.',
+      brief:'Nadia reaches out via Teams. She\'s already drafted 75% of each review from a full year of coaching context. She asks Maya for the last 25% — the judgment calls only a manager can make.',
       refs:['Full year of coaching context','Every interaction across all 8 reports','All talent milestones','Goal trajectories','Collaboration intelligence map'],
       learns:['Complete talent picture for each person','Year-long growth arcs','Team-level patterns'],
       behavior:'Write reviews from a full year of evidence — give every person the review they deserve',
@@ -555,6 +559,7 @@
             </div>
             <div class="km-title">${m.keyTitle}</div>
             <div class="km-sub">${m.keySub}</div>
+            ${m.keyContext?`<div class="km-context">${m.keyContext}</div>`:''}
             <div class="km-brief">${m.brief}</div>
             <button class="km-btn" data-km="${m.keyNum}">See it in product →</button>
           </div>`;
