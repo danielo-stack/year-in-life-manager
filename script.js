@@ -52,8 +52,10 @@
   /* ── Moments data ── */
   const MOMENTS = [
     { month:1,name:'January',type:'pull',layers:['self','others'],
+      isKeyMoment:true,keyNum:1,
+      keyTitle:'The Arrival',keySub:'She already knew what Maya was walking into.',
       title:"First day as manager",
-      brief:'"How do I establish myself without alienating the team?"',
+      brief:'Nadia reaches out before Maya even opens the app — with a personalized transition plan built from HRIS data, calendar, and prior coaching context.',
       refs:['Maya\'s profile','Org chart','Team history'],
       learns:['Maya\'s leadership style','Peer-to-manager dynamics'],
       behavior:'Have a direct, early conversation with Jordan instead of letting tension build',
@@ -70,8 +72,10 @@
       buckets:{talent:'Goal profiles for 8 direct reports',maya:'Confronting avoidance pattern'},
     },
     { month:2,name:'February',type:'pull',layers:['others'],
+      isKeyMoment:true,keyNum:2,
+      keyTitle:'The Redirect',keySub:'What you\'re about to do won\'t help her.',
       title:"Feedback to Priya",
-      brief:'"I have to give Priya feedback tomorrow. She\'s my friend."',
+      brief:'Maya drafts a soft feedback message. Nadia pushes back — drawing on Priya\'s collaboration profile, Maya\'s feedback pattern, and the org\'s own values.',
       refs:['Priya\'s profile','Maya\'s coaching history','Performance data'],
       learns:['Maya-Priya relationship','Feedback delivery patterns'],
       behavior:'Deliver specific, evidence-based feedback instead of vague reassurance',
@@ -127,8 +131,10 @@
       collabInsight:'Jordan development gap identified from Maya\'s observations',
     },
     { month:8,name:'August',type:'push',layers:['self','others','talent','ext','collab'],isConvergence:true,
+      isKeyMoment:true,keyNum:4,
+      keyTitle:'The Convergence',keySub:'She saw it before Maya did.',
       title:"Everything converges",
-      brief:'Reorg lands. Tomás and Kai arrive. Sam is on leave. Jordan unresolved. AI mandate live.',
+      brief:'Kai joins from a restructured department. Nadia sees a calendar change and immediately understands its significance — because she\'s been carrying the full context of Maya\'s year.',
       refs:['All prior context','Tomás & Kai profiles','Reorg data','AI adoption status','Team dynamics map'],
       learns:['Full team dynamics shift','Change absorption capacity','Maya\'s leadership growth'],
       behavior:'Lead through converging pressures with the clarity you\'ve built all year',
@@ -164,8 +170,10 @@
       buckets:{team:'Performance exit handled with full evidence'},
     },
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
+      isKeyMoment:true,keyNum:3,
+      keyTitle:'The Evidence',keySub:'You don\'t have to remember everything. I did.',
       title:"Year-end reviews",
-      brief:'Promotions, comp conversations, disappointments. Nadia carries the full year.',
+      brief:'8 reviews due in two weeks. Nadia has already drafted 75% of each one — from a full year of accumulated context. She asks Maya for the last 25%.',
       refs:['Full year of coaching context','Every interaction across all 8 reports','All talent milestones','Goal trajectories','Collaboration intelligence map'],
       learns:['Complete talent picture for each person','Year-long growth arcs','Team-level patterns'],
       behavior:'Write reviews from a full year of evidence — give every person the review they deserve',
@@ -531,64 +539,77 @@
       const el=document.createElement('div');
       let cls='moment';
       if(m.isTalent)cls+=' talent';if(m.isExternal)cls+=' external';if(m.isConvergence)cls+=' convergence';
+      if(m.isKeyMoment)cls+=' key-moment';
       el.className=cls;el.dataset.month=m.month;el.dataset.idx=idx;
 
       const pips=m.layers.map(l=>`<div class="m-pip" style="background:${C[l]||'#888'}"></div>`).join('');
 
-      // Build expand content
-      let expandHTML='';
+      if(m.isKeyMoment){
+        // ── KEY MOMENT: large card with product viz placeholder ──
+        el.innerHTML=`
+          <div class="m-month">${m.name}</div>
+          <div class="m-card km-card">
+            <div class="km-header">
+              <span class="km-num">Moment ${m.keyNum}</span>
+              <div class="m-pips">${pips}</div>
+            </div>
+            <div class="km-title">${m.keyTitle}</div>
+            <div class="km-sub">${m.keySub}</div>
+            <div class="km-brief">${m.brief}</div>
+            <button class="km-btn" data-km="${m.keyNum}">See it in product →</button>
+          </div>`;
 
-      // Data flow: referencing + learning
-      if(m.refs||m.learns){
-        expandHTML+='<div class="data-flow">';
-        if(m.refs){
-          expandHTML+='<div class="df-group"><div class="df-label">Nadia is referencing</div>';
-          m.refs.forEach(p=>{expandHTML+=`<div class="df-tag" style="border-color:${tagColor(p)}">${p}</div>`});
-          expandHTML+='</div>';
-        }
-        expandHTML+='<div class="df-arrow">→</div>';
-        if(m.learns){
-          expandHTML+='<div class="df-group"><div class="df-label">Nadia is learning</div>';
-          m.learns.forEach(p=>{expandHTML+=`<div class="df-tag" style="border-color:${tagColor(p)}">${p}</div>`});
-          expandHTML+='</div>';
-        }
-        expandHTML+='</div>';
+        el.querySelector('.km-btn').addEventListener('click',(e)=>{
+          e.stopPropagation();
+          openProductViz(m.keyNum,m.keyTitle);
+        });
+      }else{
+        // ── REGULAR MOMENT: headline only, no expand ──
+        el.innerHTML=`
+          <div class="m-month">${m.name}</div>
+          <div class="m-card m-card-mini">
+            <div class="m-head">
+              <div class="m-pips">${pips}</div>
+            </div>
+            <div class="m-title">${m.title}</div>
+            <div class="m-brief">${m.brief}</div>
+          </div>`;
       }
-
-      // Behavior change
-      if(m.behavior){
-        expandHTML+=`<div class="m-behavior"><span class="m-beh-label">Behavior change Nadia is enabling</span><span class="m-beh-text">${m.behavior}</span></div>`;
-      }
-
-      // Nadia response
-      if(m.nadia){
-        expandHTML+='<div class="n-resp"><span class="n-icon">✦</span><div>';
-        (Array.isArray(m.nadia)?m.nadia:[m.nadia]).forEach(p=>{expandHTML+=`<p>${p}</p>`});
-        expandHTML+='</div></div>';
-      }
-
-      // (convergence is now handled through the Nadia response itself)
-
-      el.innerHTML=`
-        <div class="m-month">${m.name}</div>
-        <div class="m-card">
-          <div class="m-head">
-            <div class="m-type ${m.type}"><span class="t-icon"></span>${m.type==='push'?'NADIA INITIATES':'MAYA ASKS'}</div>
-            <div class="m-pips">${pips}</div>
-          </div>
-          <div class="m-title">${m.title}</div>
-          <div class="m-brief">${m.brief}</div>
-          <div class="m-expand">${expandHTML}</div>
-          <div class="m-hint">CLICK TO EXPAND</div>
-        </div>`;
-
-      el.querySelector('.m-card').addEventListener('click',()=>{
-        el.classList.toggle('expanded');
-        el.querySelector('.m-hint').textContent=el.classList.contains('expanded')?'CLICK TO CLOSE':'CLICK TO EXPAND';
-      });
 
       col.appendChild(el);
     });
+  }
+
+  // Product visualization placeholder modal
+  function openProductViz(num,title){
+    // Remove existing modal
+    const old=document.getElementById('productVizModal');if(old)old.remove();
+
+    const modal=document.createElement('div');
+    modal.id='productVizModal';modal.className='pv-modal';
+    const surfaces={1:'Teams / Email message',2:'In-chat conversation',3:'Growth Moments tab → Workday',4:'My Work — Insights tab'};
+    modal.innerHTML=`
+      <div class="pv-backdrop"></div>
+      <div class="pv-content">
+        <button class="pv-close">✕</button>
+        <div class="pv-header">
+          <span class="pv-num">Moment ${num}</span>
+          <h2 class="pv-title">${title}</h2>
+          <p class="pv-surface">${surfaces[num]||''}</p>
+        </div>
+        <div class="pv-placeholder">
+          <div class="pv-placeholder-inner">
+            <p class="pv-ph-text">Product visualization</p>
+            <p class="pv-ph-sub">Design in progress — this will show the actual product experience for this moment.</p>
+          </div>
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(()=>modal.classList.add('vis'));
+
+    modal.querySelector('.pv-close').addEventListener('click',()=>{modal.classList.remove('vis');setTimeout(()=>modal.remove(),300)});
+    modal.querySelector('.pv-backdrop').addEventListener('click',()=>{modal.classList.remove('vis');setTimeout(()=>modal.remove(),300)});
   }
 
   /* ═══════════════ KNOWLEDGE FILLER ═══════════════ */
