@@ -265,8 +265,14 @@
     {month:12,name:'December',title:'Team offsite facilitation',brief:'Maya designs and runs a meaningful team offsite.',buckets:{team:'Team bonding facilitated'}},
     {month:12,name:'December',title:'Letter to future self',brief:'Nadia prompts Maya to write herself a letter about her growth.',buckets:{maya:'Year-end reflection captured'}},
   ];
-  // Sort all moments chronologically, key moments first within same month
-  MOMENTS.sort((a,b)=>a.month-b.month||(a.isKeyMoment?-1:b.isKeyMoment?1:0));
+  // Sort: by month, then key moments first (by keyNum), then fillers
+  MOMENTS.sort((a,b)=>{
+    if(a.month!==b.month)return a.month-b.month;
+    if(a.isKeyMoment&&b.isKeyMoment)return a.keyNum-b.keyNum;
+    if(a.isKeyMoment)return -1;
+    if(b.isKeyMoment)return 1;
+    return 0;
+  });
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
   const DEPTS=[
@@ -973,18 +979,25 @@
     if(arrow){
       new IntersectionObserver(e=>{arrow.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
 
-      // Find all key moment elements
       const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
+      const arrowLabel=document.getElementById('tlArrowLabel');
+      let currentKeyIdx=0;
+
+      function updateArrowLabel(){
+        if(currentKeyIdx<keyMomentEls.length){
+          const num=keyMomentEls[currentKeyIdx].querySelector('.km-num');
+          arrowLabel.textContent=num?num.textContent:'Next moment';
+        }else{
+          arrowLabel.textContent='Done';
+        }
+      }
+      updateArrowLabel();
 
       arrow.addEventListener('click',()=>{
-        // Find the next key moment below current scroll
-        const currentY=scrollY+innerHeight*.3;
-        let target=null;
-        for(const km of keyMomentEls){
-          if(km.offsetTop>currentY+80){target=km;break}
-        }
-        if(!target&&keyMomentEls.length)target=keyMomentEls[0]; // wrap to first
-        if(!target)return;
+        if(currentKeyIdx>=keyMomentEls.length)return;
+        const target=keyMomentEls[currentKeyIdx];
+        currentKeyIdx++;
+        updateArrowLabel();
 
         // Reveal ALL moments up to the target instantly (dramatic fast reveal)
         const targetIdx=+target.dataset.idx;
