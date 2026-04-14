@@ -1330,6 +1330,21 @@
   }
 
   /* ═══════════════ SENTIMENT CHART ═══════════════ */
+  /* ═══════════════ MEET MAYA TOGGLE ═══════════════ */
+  function initMeetToggle(){
+    const btns=document.querySelectorAll('.mt-btn');
+    const profile=document.getElementById('meetProfile');
+    const team=document.getElementById('meetTeam');
+    if(!btns.length||!profile||!team)return;
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      btns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const v=b.dataset.view;
+      profile.classList.toggle('hidden',v!=='profile');
+      team.classList.toggle('hidden',v!=='team');
+    }));
+  }
+
   /* ═══════════════ EVOLUTION CANVAS ═══════════════ */
   function initEvolution(){
     const cv=document.getElementById('evoCanvas');
@@ -1719,7 +1734,7 @@
   function init(){
     const orgMap=new OrgMap(document.getElementById('orgCanvas'));orgMap.tick();
     initOpening(orgMap);buildTimeline();initScroll();initShowMore();
-    initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
+    initMeetToggle();initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
