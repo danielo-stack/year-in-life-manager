@@ -501,21 +501,30 @@
 
     // Begin click is handled by beginCta above
 
-    // Hide opening elements when timeline is in view
+    // Hide opening elements when anything past opening is in view
+    const meetSec=document.getElementById('meetSection');
     const tlSec=document.getElementById('tlSection');
     let hidden=false;
-    if(tlSec){
-      new IntersectionObserver(e=>{
-        if(e[0].isIntersecting&&!hidden){
-          hidden=true;orgMap.setMode('off');tmRing.classList.add('hidden');
-          const grad=document.getElementById('opGradient');if(grad)grad.style.opacity='0';
-        }else if(!e[0].isIntersecting&&hidden){
-          const oRect=document.getElementById('opening').getBoundingClientRect();
-          if(oRect.bottom>innerHeight*.5){hidden=false;tmRing.classList.remove('hidden');
-            const grad=document.getElementById('opGradient');if(grad)grad.style.opacity='1'}
-        }
-      },{threshold:.01}).observe(tlSec);
+    function hideOpening(){
+      if(hidden)return;hidden=true;
+      orgMap.setMode('off');tmRing.classList.add('hidden');
+      const grad=document.getElementById('opGradient');if(grad)grad.style.opacity='0';
     }
+    function showOpening(){
+      if(!hidden)return;
+      const oRect=document.getElementById('opening').getBoundingClientRect();
+      if(oRect.bottom>innerHeight*.5){
+        hidden=false;tmRing.classList.remove('hidden');
+        const grad=document.getElementById('opGradient');if(grad)grad.style.opacity='1';
+      }
+    }
+    // Watch both meet section and timeline — hide when either enters
+    [meetSec,tlSec].filter(Boolean).forEach(el=>{
+      new IntersectionObserver(e=>{
+        if(e[0].isIntersecting)hideOpening();
+        else showOpening();
+      },{threshold:.01}).observe(el);
+    });
   }
 
   /* ═══════════════ HELPERS ═══════════════ */
