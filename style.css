@@ -296,7 +296,7 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 .pv-img{width:100%;height:auto;display:block}
 
 /* Full-screen immersive iframe */
-.pv-fullscreen{position:fixed;inset:0;z-index:10000;background:#000}
+.pv-fullscreen{position:fixed;inset:0;z-index:10000;background:#000;width:100vw;height:100vh}
 .pv-fs-iframe{width:100%;height:100%;border:none}
 .pv-fs-close{position:fixed;top:16px;right:16px;z-index:10001;font-family:var(--font-b);font-size:.85rem;font-weight:600;color:#fff;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);padding:8px 20px;border-radius:8px;cursor:pointer;transition:all .2s ease}
 .pv-fs-close:hover{background:rgba(0,0,0,.8)}

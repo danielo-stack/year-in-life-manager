@@ -269,18 +269,18 @@
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
   const DEPTS=[
-    {name:'Engineering',color:'#3B82F6',x:.42,y:.32,r:38},
-    {name:'Product',color:'#8B5CF6',x:.22,y:.18,r:28},
-    {name:'Marketing',color:'#EC4899',x:.72,y:.15,r:30},
-    {name:'Sales',color:'#F59E0B',x:.85,y:.45,r:36},
-    {name:'Finance',color:'#10B981',x:.12,y:.52,r:24},
-    {name:'HR',color:'#F472B6',x:.28,y:.72,r:22},
-    {name:'Operations',color:'#06B6D4',x:.62,y:.75,r:30},
-    {name:'Legal',color:'#A78BFA',x:.08,y:.32,r:18},
-    {name:'Customer Success',color:'#F97316',x:.88,y:.72,r:26},
-    {name:'Data Science',color:'#14B8A6',x:.55,y:.12,r:22},
-    {name:'Design',color:'#E879F9',x:.38,y:.52,r:20},
-    {name:'IT',color:'#64748B',x:.15,y:.85,r:18},
+    {name:'Engineering',color:'#3B82F6',x:.42,y:.32,r:76},
+    {name:'Product',color:'#8B5CF6',x:.22,y:.18,r:56},
+    {name:'Marketing',color:'#EC4899',x:.72,y:.15,r:60},
+    {name:'Sales',color:'#F59E0B',x:.85,y:.45,r:72},
+    {name:'Finance',color:'#10B981',x:.12,y:.52,r:48},
+    {name:'HR',color:'#F472B6',x:.28,y:.72,r:44},
+    {name:'Operations',color:'#06B6D4',x:.62,y:.75,r:60},
+    {name:'Legal',color:'#A78BFA',x:.08,y:.32,r:36},
+    {name:'Customer Success',color:'#F97316',x:.88,y:.72,r:52},
+    {name:'Data Science',color:'#14B8A6',x:.55,y:.12,r:44},
+    {name:'Design',color:'#E879F9',x:.38,y:.52,r:40},
+    {name:'IT',color:'#64748B',x:.15,y:.85,r:36},
   ];
   const DEPT_LINKS=[[0,1],[0,2],[0,3],[0,10],[1,2],[1,9],[1,10],[2,3],[2,8],[3,4],[3,8],[4,5],[4,7],[5,0],[5,6],[5,11],[6,0],[6,3],[6,8],[7,4],[7,11],[8,3],[9,0],[9,10],[10,1],[11,5],[11,7],[0,6],[2,9],[4,11],[6,11],[1,3]];
 
@@ -373,7 +373,7 @@
         ctx.strokeStyle=d.color+(highlight?'90':'40');ctx.lineWidth=highlight?2.5:1.2;ctx.stroke();
         // Label
         ctx.fillStyle='rgba(255,255,255,'+(highlight?'.9':'.65')+')';
-        ctx.font=(highlight?'700':'600')+' '+(d.r>25?'11':'9')+'px "DM Sans"';ctx.textAlign='center';
+        ctx.font=(highlight?'700':'600')+' '+(d.r>40?'14':'11')+'px "DM Sans"';ctx.textAlign='center';
         ctx.fillText(d.name,d.px,d.py+3);
       });
       ctx.globalAlpha=1;
@@ -1637,7 +1637,7 @@
         ctx.beginPath();ctx.arc(px,py,d.r,0,Math.PI*2);
         ctx.fillStyle=d.color+'15';ctx.fill();
         ctx.strokeStyle=d.color+'40';ctx.lineWidth=1.2;ctx.stroke();
-        ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='600 '+(d.r>25?'11':'9')+'px "DM Sans"';ctx.textAlign='center';
+        ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='600 '+(d.r>40?'14':'11')+'px "DM Sans"';ctx.textAlign='center';
         ctx.fillText(d.name,px,py+3);
       });
       ctx.globalAlpha=1;
