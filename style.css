@@ -233,6 +233,7 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 .moments-col{padding:0 4px}
 .moment{position:relative;margin-bottom:28px;opacity:0;transform:translateY(20px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .moment.vis{opacity:1;transform:translateY(0)}
+.moment.fast-reveal{transition:opacity .15s ease,transform .15s ease}
 .m-month{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px}
 .m-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:all .25s var(--ease);position:relative;overflow:hidden}
 .m-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}

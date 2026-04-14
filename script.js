@@ -238,9 +238,35 @@
     {month:12,name:'December',title:'Review prep: Alex & Priya',brief:'The competition arc becomes a development story.',buckets:{talent:'Team dynamic documented'}},
     {month:12,name:'December',title:'Year-end team celebration',brief:'Maya plans a meaningful end-of-year acknowledgment.',buckets:{team:'Team recognition moment'}},
     {month:12,name:'December',title:'Maya\'s own reflection',brief:'Nadia prompts Maya to reflect on her transformation this year.',buckets:{maya:'Full year growth arc captured'}},
+    // ── More filler for density ──
+    {month:1,name:'January',title:'Team norms discussion',brief:'Maya establishes team agreements for how they\'ll work together.',buckets:{team:'Team norms established'}},
+    {month:1,name:'January',title:'First weekly standup',brief:'Nadia coaches Maya on running an efficient standup format.',buckets:{team:'Meeting cadence set'}},
+    {month:2,name:'February',title:'Difficult email draft',brief:'Maya rewrites a message three times. Nadia helps find the right tone.',buckets:{maya:'Written tone improving'}},
+    {month:2,name:'February',title:'Jordan 1:1 debrief',brief:'After the 1:1, Maya processes what Jordan shared.',buckets:{team:'Jordan relationship deepening'}},
+    {month:3,name:'March',title:'Workload rebalancing',brief:'Two team members are overloaded. Maya redistributes.',buckets:{team:'Capacity management improving'}},
+    {month:3,name:'March',title:'Peer manager coffee chat',brief:'Maya compares notes with another new manager. Nadia helps process.',buckets:{maya:'Peer learning captured'}},
+    {month:4,name:'April',title:'Team celebration planning',brief:'Maya plans a small win celebration after a tough quarter.',buckets:{team:'Team morale investment'}},
+    {month:4,name:'April',title:'Upward feedback practice',brief:'Maya rehearses giving feedback to her own manager.',buckets:{maya:'Upward influence building'}},
+    {month:5,name:'May',title:'IDP check-ins',brief:'Nadia reminds Maya to check in on development plans.',buckets:{talent:'IDP progress tracked'}},
+    {month:5,name:'May',title:'Meeting audit',brief:'Maya realizes she\'s in too many meetings. Nadia helps prioritize.',buckets:{maya:'Time management refined'}},
+    {month:6,name:'June',title:'Vacation handoff prep',brief:'Maya prepares for her own time off. Nadia helps delegate.',buckets:{team:'Delegation skills growing'}},
+    {month:6,name:'June',title:'New project kickoff',brief:'A cross-functional project launches. Maya sets team expectations.',buckets:{team:'Project leadership initiated'}},
+    {month:7,name:'July',title:'Feedback follow-up with Priya',brief:'Checking in on the changes since the March feedback conversation.',buckets:{team:'Priya development tracked'}},
+    {month:7,name:'July',title:'Team dynamic temperature check',brief:'Nadia prompts Maya to reflect on how the team is working together.',buckets:{team:'Collaboration health assessed'}},
+    {month:8,name:'August',title:'AI tool rollout coaching',brief:'Maya coaches her team through adopting new AI tools.',buckets:{external:'AI adoption facilitated'}},
+    {month:8,name:'August',title:'Tomás first 1:1',brief:'Maya has her first real 1:1 with Tomás. Nadia helps prepare.',buckets:{team:'Tomás trust building'}},
+    {month:9,name:'September',title:'Kai project ownership',brief:'Kai takes the lead on a deliverable. Maya sets clear expectations.',buckets:{team:'Kai integration progressing'}},
+    {month:9,name:'September',title:'Team retrospective',brief:'Maya runs a structured retro. Nadia helped design the format.',buckets:{team:'Team reflection facilitated'}},
+    {month:10,name:'October',title:'Conflict resolution coaching',brief:'Two team members clash. Maya mediates with Nadia\'s framework.',buckets:{team:'Conflict resolution practiced'}},
+    {month:10,name:'October',title:'Strategy translation',brief:'Maya translates org strategy into team-level goals.',buckets:{maya:'Strategic thinking developing'}},
+    {month:11,name:'November',title:'Recognition for Sam',brief:'Sam returns from leave. Maya ensures a smooth re-integration.',buckets:{team:'Sam re-onboarded thoughtfully'}},
+    {month:11,name:'November',title:'End-of-year planning',brief:'Maya plans the final quarter push with her team.',buckets:{team:'Q4 plan aligned'}},
+    {month:12,name:'December',title:'Promotion conversation prep',brief:'Maya prepares to advocate for Jordan\'s promotion.',buckets:{talent:'Promotion advocacy prepared'}},
+    {month:12,name:'December',title:'Team offsite facilitation',brief:'Maya designs and runs a meaningful team offsite.',buckets:{team:'Team bonding facilitated'}},
+    {month:12,name:'December',title:'Letter to future self',brief:'Nadia prompts Maya to write herself a letter about her growth.',buckets:{maya:'Year-end reflection captured'}},
   ];
-  // Sort all moments chronologically
-  MOMENTS.sort((a,b)=>a.month-b.month);
+  // Sort all moments chronologically, key moments first within same month
+  MOMENTS.sort((a,b)=>a.month-b.month||(a.isKeyMoment?-1:b.isKeyMoment?1:0));
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
   const DEPTS=[
@@ -942,21 +968,47 @@
       document.getElementById('scrollBar').style.width=p+'%';tick=false;
     });tick=true}},{passive:true});
 
-    // Floating next-moment arrow
+    // Floating next-moment arrow — jumps to next KEY moment
     const arrow=document.getElementById('tlNextArrow');
     if(arrow){
-      // Show arrow when timeline is in view
       new IntersectionObserver(e=>{arrow.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
+
+      // Find all key moment elements
+      const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
+
       arrow.addEventListener('click',()=>{
-        // Find the next moment card that's below the current viewport
-        const viewBottom=scrollY+innerHeight*.4;
-        for(const m of allMoments){
-          const rect=m.getBoundingClientRect();
-          if(rect.top+scrollY>viewBottom+50){
-            m.scrollIntoView({behavior:'smooth',block:'center'});
-            break;
-          }
+        // Find the next key moment below current scroll
+        const currentY=scrollY+innerHeight*.3;
+        let target=null;
+        for(const km of keyMomentEls){
+          if(km.offsetTop>currentY+80){target=km;break}
         }
+        if(!target&&keyMomentEls.length)target=keyMomentEls[0]; // wrap to first
+        if(!target)return;
+
+        // Reveal ALL moments up to the target instantly (dramatic fast reveal)
+        const targetIdx=+target.dataset.idx;
+        const revealBatch=[];
+        while(nextToReveal<=targetIdx&&nextToReveal<allMoments.length){
+          revealBatch.push(nextToReveal);
+          nextToReveal++;
+        }
+        // Animate them in rapid succession — whizzing by dramatically
+        revealBatch.forEach((ri,i)=>{
+          setTimeout(()=>{
+            const el=allMoments[ri];
+            el.classList.add('fast-reveal','vis');
+            const idx=+el.dataset.idx,month=+el.dataset.month;
+            updateTL(month);fillBuckets(idx);
+            // Remove fast-reveal after animation
+            setTimeout(()=>el.classList.remove('fast-reveal'),200);
+          },i*35); // 35ms apart — fast and dramatic
+        });
+
+        // Scroll to the key moment after a beat
+        setTimeout(()=>{
+          target.scrollIntoView({behavior:'smooth',block:'center'});
+        },Math.min(revealBatch.length*40+100,800));
       });
     }
   }
