@@ -983,64 +983,63 @@
 
       const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
       const arrowLabel=document.getElementById('tlArrowLabel');
-      let currentKeyIdx=0;
+      // nextKeyIdx = the index of the next key moment to go TO (0-based into keyMomentEls)
+      let nextKeyIdx=0;
 
       function updateNav(){
-        if(currentKeyIdx<keyMomentEls.length){
-          const num=keyMomentEls[currentKeyIdx].querySelector('.km-num');
-          arrowLabel.textContent=num?num.textContent:'Next moment';
+        if(nextKeyIdx<keyMomentEls.length){
+          const num=keyMomentEls[nextKeyIdx].querySelector('.km-num');
+          arrowLabel.textContent=num?num.textContent:'Next';
         }else{
           arrowLabel.textContent='What\'s next →';
         }
-        prevArrow.classList.toggle('vis',currentKeyIdx>0);
+        prevArrow.classList.toggle('vis',nextKeyIdx>0);
       }
       updateNav();
 
-      // NEXT — go forward
-      arrow.addEventListener('click',()=>{
-        if(currentKeyIdx>=keyMomentEls.length){
-          const evoSection=document.getElementById('evoSection');
-          if(evoSection)evoSection.scrollIntoView({behavior:'smooth'});
-          navContainer.classList.remove('vis');
-          return;
-        }
-        const target=keyMomentEls[currentKeyIdx];
-        currentKeyIdx++;
-        updateNav();
-
-        // Reveal ALL moments up to the target instantly (dramatic fast reveal)
-        const targetIdx=+target.dataset.idx;
+      function goToKey(idx){
+        if(idx<0||idx>=keyMomentEls.length)return;
+        const target=keyMomentEls[idx];
+        // Reveal all moments up to target
+        const targetMomentIdx=+target.dataset.idx;
         const revealBatch=[];
-        while(nextToReveal<=targetIdx&&nextToReveal<allMoments.length){
-          revealBatch.push(nextToReveal);
-          nextToReveal++;
+        while(nextToReveal<=targetMomentIdx&&nextToReveal<allMoments.length){
+          revealBatch.push(nextToReveal);nextToReveal++;
         }
-        // Animate them in rapid succession — whizzing by dramatically
         revealBatch.forEach((ri,i)=>{
           setTimeout(()=>{
             const el=allMoments[ri];
             el.classList.add('fast-reveal','vis');
-            const idx=+el.dataset.idx,month=+el.dataset.month;
-            updateTL(month);fillBuckets(idx);
-            // Remove fast-reveal after animation
+            const midx=+el.dataset.idx,month=+el.dataset.month;
+            updateTL(month);fillBuckets(midx);
             setTimeout(()=>el.classList.remove('fast-reveal'),200);
-          },i*35); // 35ms apart — fast and dramatic
+          },i*35);
         });
-
-        // Scroll to the key moment after a beat
         setTimeout(()=>{
           target.scrollIntoView({behavior:'smooth',block:'center'});
-        },Math.min(revealBatch.length*40+100,800));
+        },Math.min(revealBatch.length*35+100,800));
+      }
+
+      // NEXT
+      arrow.addEventListener('click',()=>{
+        if(nextKeyIdx>=keyMomentEls.length){
+          const evo=document.getElementById('evoSection');
+          if(evo)evo.scrollIntoView({behavior:'smooth'});
+          navContainer.classList.remove('vis');
+          return;
+        }
+        goToKey(nextKeyIdx);
+        nextKeyIdx++;
+        updateNav();
       });
 
-      // PREV — go back to previous key moment
+      // PREV
       prevArrow.addEventListener('click',()=>{
-        if(currentKeyIdx<=0)return;
-        currentKeyIdx=Math.max(0,currentKeyIdx-2); // go back one (we already incremented)
-        const target=keyMomentEls[currentKeyIdx];
-        currentKeyIdx++; // set to current so next click goes forward
+        if(nextKeyIdx<=1)return; // already at or before moment 1
+        nextKeyIdx=Math.max(0,nextKeyIdx-2);
+        goToKey(nextKeyIdx);
+        nextKeyIdx++;
         updateNav();
-        if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
       });
     }
   }
