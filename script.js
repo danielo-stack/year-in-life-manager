@@ -1732,9 +1732,10 @@
 
   /* ═══════════════ INIT ═══════════════ */
   function init(){
+    initMeetToggle();
     const orgMap=new OrgMap(document.getElementById('orgCanvas'));orgMap.tick();
     initOpening(orgMap);buildTimeline();initScroll();initShowMore();
-    initMeetToggle();initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
+    initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
