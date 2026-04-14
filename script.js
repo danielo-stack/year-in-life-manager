@@ -1000,24 +1000,30 @@
       function goToKey(idx){
         if(idx<0||idx>=keyMomentEls.length)return;
         const target=keyMomentEls[idx];
-        // Reveal all moments up to target
         const targetMomentIdx=+target.dataset.idx;
+
+        // Reveal all moments up to target (if not already revealed)
         const revealBatch=[];
         while(nextToReveal<=targetMomentIdx&&nextToReveal<allMoments.length){
           revealBatch.push(nextToReveal);nextToReveal++;
         }
-        revealBatch.forEach((ri,i)=>{
+        if(revealBatch.length>0){
+          revealBatch.forEach((ri,i)=>{
+            setTimeout(()=>{
+              const el=allMoments[ri];
+              el.classList.add('fast-reveal','vis');
+              const midx=+el.dataset.idx,month=+el.dataset.month;
+              updateTL(month);fillBuckets(midx);
+              setTimeout(()=>el.classList.remove('fast-reveal'),200);
+            },i*35);
+          });
           setTimeout(()=>{
-            const el=allMoments[ri];
-            el.classList.add('fast-reveal','vis');
-            const midx=+el.dataset.idx,month=+el.dataset.month;
-            updateTL(month);fillBuckets(midx);
-            setTimeout(()=>el.classList.remove('fast-reveal'),200);
-          },i*35);
-        });
-        setTimeout(()=>{
+            target.scrollIntoView({behavior:'smooth',block:'center'});
+          },Math.min(revealBatch.length*35+100,800));
+        }else{
+          // Already revealed — just scroll
           target.scrollIntoView({behavior:'smooth',block:'center'});
-        },Math.min(revealBatch.length*35+100,800));
+        }
       }
 
       // NEXT
