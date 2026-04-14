@@ -53,15 +53,27 @@
   const MOMENTS = [
     { month:1,name:'January',type:'pull',layers:['self','others'],
       isKeyMoment:true,keyNum:1,
-      keyTitle:'The Arrival',keySub:'She already knew what Maya was walking into.',
-      keyContext:'Maya was just promoted from IC to manager. She hasn\'t opened Nadia yet — she\'s been in back-to-back calendar blocks since 8am. She\'s managing 8 people who were her peers last week, including Jordan, who also wanted the role.',
+      keyTitle:'Maya\'s Profile & Team',keySub:'Nadia already knows how Maya leads.',
+      keyContext:'Maya was just promoted from IC to manager. Before she even opens Nadia, a rich profile has been built from coaching conversations, HRIS data, and collaboration patterns — for her and every person on her team.',
       title:"First day as manager",
-      brief:'Nadia reaches out first via Teams — with a personalized transition plan built from HRIS data, calendar patterns, company onboarding standards, and prior coaching context.',
+      brief:'See Maya\'s collaboration profile, her traits, and how Nadia understands each of her 8 direct reports.',
       refs:['Maya\'s profile','Org chart','Team history'],
       learns:['Maya\'s leadership style','Peer-to-manager dynamics'],
       behavior:'Have a direct, early conversation with Jordan instead of letting tension build',
       nadia:["Maya, I can see this is a big transition. You have 8 direct reports — several of whom were your peers until last week. Based on your profile, you tend toward consensus-building and relationship preservation. Those are real strengths, but in the first two weeks of a new leadership role, they can read as indecisiveness if you don't pair them with clarity.","There's one relationship I want to flag immediately: Jordan. They were also up for this role, and based on the team dynamics I'm seeing, that tension is already present even if no one's naming it. The longer it stays unspoken, the harder it becomes. I'd recommend a direct, one-on-one conversation within the next week — not to address the competition, but to signal that you see Jordan's value and want to invest in their growth.","I can help you prepare talking points for that conversation and build a 30-day leadership plan that establishes your credibility without alienating the people who used to be your peers."],
       buckets:{maya:'Peer-to-manager identity shift',team:'Jordan tension flagged from day one'},
+    },
+    { month:1,name:'January',type:'push',layers:['self'],
+      isKeyMoment:true,keyNum:2,
+      keyTitle:'The Journey',keySub:'Nadia builds Maya a personalized development path.',
+      keyContext:'Before Maya has even settled into her first week, Nadia sends a Teams message with a link to a curated journey — built around Maya\'s specific transition from IC to manager, her collaboration profile, and the team dynamics she\'s inheriting.',
+      title:"Nadia sends Maya her first journey",
+      brief:'A Teams message from Nadia links to a personalized coaching journey designed for Maya\'s transition into management — with milestones, resources, and coaching prompts tailored to her situation.',
+      refs:['Maya\'s profile','Company onboarding framework','Team context'],
+      learns:['Maya\'s development priorities','New manager transition patterns'],
+      behavior:'Follow a structured yet personalized development path from day one',
+      nadia:["Maya, I\'ve put together a coaching journey for your first 90 days as a manager. It\'s built around three things: what I know about your strengths and growth areas, your company\'s expectations for new managers, and the specific dynamics of the team you\'re inheriting. This isn\'t generic — it\'s yours."],
+      buckets:{maya:'Personalized journey activated'},
     },
     { month:2,name:'February',type:'push',layers:['talent','self'],isTalent:true,
       title:"Goal setting due in 10 days",
@@ -73,7 +85,7 @@
       buckets:{talent:'Goal profiles for 8 direct reports',maya:'Confronting avoidance pattern'},
     },
     { month:2,name:'February',type:'pull',layers:['others'],
-      isKeyMoment:true,keyNum:2,
+      isKeyMoment:true,keyNum:3,
       keyTitle:'The Redirect',keySub:'What you\'re about to do won\'t help her.',
       keyContext:'Priya missed a client deadline. Maya spent 40 minutes writing a feedback message. She thinks it\'s good — but it\'s wrapped in so much softening language that the actual feedback is invisible.',
       title:"Feedback to Priya",
@@ -133,7 +145,7 @@
       collabInsight:'Jordan development gap identified from Maya\'s observations',
     },
     { month:8,name:'August',type:'push',layers:['self','others','talent','ext','collab'],isConvergence:true,
-      isKeyMoment:true,keyNum:3,
+      isKeyMoment:true,keyNum:4,
       keyTitle:'The Convergence',keySub:'She saw it before Maya did.',
       keyContext:'A department is dissolved. Kai is being absorbed onto Maya\'s team — someone who didn\'t choose to be here. Meanwhile: Sam is on leave, Jordan\'s situation is still developing, the Priya-Alex dynamic is fragile, and the AI mandate is live.',
       title:"Everything converges",
@@ -173,11 +185,11 @@
       buckets:{team:'Difficult conversation navigated with directness'},
     },
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
-      isKeyMoment:true,keyNum:4,
-      keyTitle:'The Evidence',keySub:'You don\'t have to remember everything. I did.',
-      keyContext:'It\'s December. Performance review season. Maya has 8 reviews due in two weeks. She hasn\'t kept a running notes doc — she\'s been meaning to all year.',
+      isKeyMoment:true,keyNum:5,
+      keyTitle:'Performance Management',keySub:'You don\'t have to remember everything. I did.',
+      keyContext:'It\'s December. Performance review season. Maya has 8 reviews due in two weeks. She hasn\'t kept a running notes doc — but Nadia has been building the evidence all year.',
       title:"Year-end reviews",
-      brief:'Nadia reaches out via Teams. She\'s already drafted 75% of each review from a full year of coaching context. She asks Maya for the last 25% — the judgment calls only a manager can make.',
+      brief:'Nadia has already drafted 75% of each review from a full year of coaching context. She asks Maya for the last 25% — the judgment calls only a manager can make. Reviews push directly to the HRIS.',
       refs:['Full year of coaching context','Every interaction across all 8 reports','All talent milestones','Goal trajectories','Collaboration intelligence map'],
       learns:['Complete talent picture for each person','Year-long growth arcs','Team-level patterns'],
       behavior:'Write reviews from a full year of evidence — give every person the review they deserve',
@@ -601,10 +613,9 @@
 
     const modal=document.createElement('div');
     modal.id='productVizModal';modal.className='pv-modal';
-    const surfaces={1:'Teams / Email message',2:'In-chat conversation',3:'My Work — Insights tab',4:'Growth Moments tab → Workday'};
-    const images={3:'moment4-insights.png'};
-    // Moment 1 embeds the nadia-demo app (Scene 1: The Nudge)
-    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?screen=1'};
+    const surfaces={1:'Collaboration Profile & Team',2:'Teams Message → Journeys',3:'In-chat Coaching Conversation',4:'My Work — Insights Tab',5:'Performance Reviews → HRIS'};
+    const images={};
+    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?moment=1',2:'https://nadia-demo-rosy.vercel.app/?moment=2',3:'https://nadia-demo-rosy.vercel.app/?moment=3',4:'https://nadia-demo-rosy.vercel.app/?moment=4',5:'https://nadia-demo-rosy.vercel.app/?moment=5'};
     const hasEmbed=embedUrl[num];
     const hasImage=!hasEmbed&&images[num];
     if(hasEmbed){
