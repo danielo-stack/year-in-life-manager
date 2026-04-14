@@ -514,7 +514,6 @@
     // Begin click is handled by beginCta above
 
     // Hide opening elements when anything past opening is in view
-    const meetSec=document.getElementById('meetSection');
     const tlSec=document.getElementById('tlSection');
     let hidden=false;
     function hideOpening(){
@@ -531,7 +530,7 @@
       }
     }
     // Watch both meet section and timeline — hide when either enters
-    [meetSec,tlSec].filter(Boolean).forEach(el=>{
+    [tlSec].filter(Boolean).forEach(el=>{
       new IntersectionObserver(e=>{
         if(e[0].isIntersecting)hideOpening();
         else showOpening();
