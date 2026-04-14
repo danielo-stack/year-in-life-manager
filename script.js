@@ -234,10 +234,6 @@
     {month:11,name:'November',title:'Comp conversation coaching',brief:'Nadia helps Maya prepare for compensation discussions.',buckets:{talent:'Comp conversations prepared'}},
     {month:11,name:'November',title:'Holiday planning and coverage',brief:'Maya plans team coverage for the holidays.',buckets:{team:'Holiday coverage organized'}},
     {month:11,name:'November',title:'Priya promotion readiness',brief:'Maya assesses whether Priya is ready for more scope.',buckets:{team:'Priya trajectory assessed'}},
-    {month:12,name:'December',title:'Review prep: Jordan',brief:'Nadia surfaces the full year of context for Jordan\'s review.',buckets:{talent:'Jordan review context ready'}},
-    {month:12,name:'December',title:'Review prep: Alex & Priya',brief:'The competition arc becomes a development story.',buckets:{talent:'Team dynamic documented'}},
-    {month:12,name:'December',title:'Year-end team celebration',brief:'Maya plans a meaningful end-of-year acknowledgment.',buckets:{team:'Team recognition moment'}},
-    {month:12,name:'December',title:'Maya\'s own reflection',brief:'Nadia prompts Maya to reflect on her transformation this year.',buckets:{maya:'Full year growth arc captured'}},
     // ── More filler for density ──
     {month:1,name:'January',title:'Team norms discussion',brief:'Maya establishes team agreements for how they\'ll work together.',buckets:{team:'Team norms established'}},
     {month:1,name:'January',title:'First weekly standup',brief:'Nadia coaches Maya on running an efficient standup format.',buckets:{team:'Meeting cadence set'}},
@@ -261,9 +257,6 @@
     {month:10,name:'October',title:'Strategy translation',brief:'Maya translates org strategy into team-level goals.',buckets:{maya:'Strategic thinking developing'}},
     {month:11,name:'November',title:'Recognition for Sam',brief:'Sam returns from leave. Maya ensures a smooth re-integration.',buckets:{team:'Sam re-onboarded thoughtfully'}},
     {month:11,name:'November',title:'End-of-year planning',brief:'Maya plans the final quarter push with her team.',buckets:{team:'Q4 plan aligned'}},
-    {month:12,name:'December',title:'Promotion conversation prep',brief:'Maya prepares to advocate for Jordan\'s promotion.',buckets:{talent:'Promotion advocacy prepared'}},
-    {month:12,name:'December',title:'Team offsite facilitation',brief:'Maya designs and runs a meaningful team offsite.',buckets:{team:'Team bonding facilitated'}},
-    {month:12,name:'December',title:'Letter to future self',brief:'Nadia prompts Maya to write herself a letter about her growth.',buckets:{maya:'Year-end reflection captured'}},
   ];
   // Sort: by month, then key moments first (by keyNum), then fillers
   MOMENTS.sort((a,b)=>{
@@ -977,14 +970,14 @@
     // Floating next-moment arrow — jumps to next KEY moment
     const navContainer=document.querySelector('.tl-nav-arrows');
     const arrow=document.getElementById('tlNextArrow');
-    const prevArrow=document.getElementById('tlPrevArrow');
+    const resetBtn=document.getElementById('tlReset');
     if(arrow&&navContainer){
       new IntersectionObserver(e=>{navContainer.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
 
       const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
       const arrowLabel=document.getElementById('tlArrowLabel');
-      // nextKeyIdx = the index of the next key moment to go TO (0-based into keyMomentEls)
-      let nextKeyIdx=0;
+      // Start at index 2 (Moment 3) — moments 1-2 are close together, no need to skip between them
+      let nextKeyIdx=2;
 
       function updateNav(){
         if(nextKeyIdx<keyMomentEls.length){
@@ -993,7 +986,7 @@
         }else{
           arrowLabel.textContent='What\'s next →';
         }
-        prevArrow.classList.toggle('vis',nextKeyIdx>0);
+        if(resetBtn)resetBtn.classList.toggle('vis',nextKeyIdx>2);
       }
       updateNav();
 
@@ -1039,13 +1032,28 @@
         updateNav();
       });
 
-      // PREV
-      prevArrow.addEventListener('click',()=>{
-        if(nextKeyIdx<=1)return; // already at or before moment 1
-        nextKeyIdx=Math.max(0,nextKeyIdx-2);
-        goToKey(nextKeyIdx);
-        nextKeyIdx++;
+      // RESET — scroll to top of timeline, hide all moments, reset counters
+      if(resetBtn)resetBtn.addEventListener('click',()=>{
+        // Hide all moments
+        allMoments.forEach(el=>el.classList.remove('vis','fast-reveal'));
+        nextToReveal=0;
+        nextKeyIdx=2;
+        // Reset knowledge counters
+        dpCounts.maya=0;dpCounts.team=0;dpCounts.talent=0;dpCounts.external=0;
+        prevTotal=0;
+        ['Maya','Team','Talent','External'].forEach(name=>{
+          const bar=document.getElementById('prog'+name);if(bar)bar.style.width='0%';
+          const count=document.getElementById('count'+name);if(count)count.textContent='0';
+          const items=document.getElementById('kb'+name);if(items)items.innerHTML='';
+        });
+        const totalEl=document.getElementById('totalDP');if(totalEl)totalEl.textContent='0';
+        added.clear();
+        updateTL(0);
         updateNav();
+        // Scroll to top of timeline
+        tlSectionEl.scrollIntoView({behavior:'smooth'});
+        // Re-trigger first reveal after scroll
+        setTimeout(()=>{started=false;setTimeout(checkReveal,400)},600);
       });
     }
   }
