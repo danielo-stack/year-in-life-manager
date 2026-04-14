@@ -387,8 +387,36 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 .org-watch-item{display:flex;align-items:flex-start;gap:10px;font-size:.85rem;color:var(--text-dim);line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:6px}
 .org-w-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
 
-/* Bottom stats */
-.org-stats-bottom{margin-top:16px}
+/* Sentiment deep dive */
+.org-deep-title{font-size:.9rem;font-weight:700;color:var(--text);margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--border)}
+.org-deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.org-deep-col{}
+.org-deep-label{font-family:var(--font-m);font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.org-theme-item{font-size:.82rem;color:var(--text-dim);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;justify-content:space-between;gap:8px}
+.org-theme-pct{font-family:var(--font-m);font-size:.72rem;font-weight:700;color:var(--text-muted);flex-shrink:0}
+.org-theme-pct.new{color:var(--c-collab)}
+.org-theme-pct.improving{color:var(--c-collab)}
+.org-risk{font-size:.82rem;padding:8px 10px;border-radius:6px;margin-bottom:6px;line-height:1.45}
+.org-risk.red{background:rgba(239,68,68,.06);border-left:3px solid #EF4444;color:var(--text-dim)}
+.org-risk.amber{background:rgba(245,158,11,.06);border-left:3px solid #F59E0B;color:var(--text-dim)}
+.org-risk.green{background:rgba(16,185,129,.06);border-left:3px solid #10B981;color:var(--text-dim)}
+.org-nadia-action{font-size:.78rem;color:var(--c-nadia);padding:4px 0;line-height:1.45}
+
+/* Collaboration Intelligence */
+.org-collab-note{font-size:.82rem;color:var(--text-dim);font-style:italic;margin-bottom:16px;line-height:1.5}
+.org-collab-item{padding:10px 12px;border-radius:6px;margin-bottom:6px;font-size:.84rem;color:var(--text-dim);line-height:1.5}
+.org-collab-item.pos{background:rgba(16,185,129,.04);border-left:2px solid rgba(16,185,129,.3)}
+.org-collab-item.neg{background:rgba(239,68,68,.04);border-left:2px solid rgba(239,68,68,.2)}
+.org-collab-item strong{color:var(--text)}
+.org-collab-delta{font-family:var(--font-m);font-size:.72rem;font-weight:700;color:var(--c-collab);display:block;margin-top:2px}
+
+/* Coaching themes */
+.org-themes-note{font-size:.82rem;color:var(--text-dim);font-style:italic;margin-bottom:14px;line-height:1.5}
+.org-themes-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.org-theme-rank{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-dim);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.org-rank{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text-muted);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.org-avoid-item{font-size:.82rem;color:var(--text-dim);padding:8px 10px;background:rgba(245,158,11,.04);border-left:2px solid rgba(245,158,11,.2);border-radius:0 6px 6px 0;margin-bottom:6px;line-height:1.45}
+.org-avoid-note{display:block;font-size:.72rem;color:var(--c-ext);margin-top:2px}
 
 /* Stat sub */
 .org-stat-sub{display:block;font-size:.65rem;color:var(--text-muted);margin-top:1px}
