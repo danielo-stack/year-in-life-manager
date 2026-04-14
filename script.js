@@ -595,20 +595,31 @@
     const surfaces={1:'Teams / Email message',2:'In-chat conversation',3:'My Work — Insights tab',4:'Growth Moments tab → Workday'};
     const images={3:'moment4-insights.png'};
     // Moment 1 embeds the nadia-demo app (Scene 1: The Nudge)
-    const embedUrl={1:'https://nadia-demo.vercel.app/'};
+    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?screen=1'};
     const hasEmbed=embedUrl[num];
     const hasImage=!hasEmbed&&images[num];
+    if(hasEmbed){
+      // Full-screen immersive iframe
+      modal.innerHTML=`
+        <div class="pv-fullscreen">
+          <button class="pv-fs-close">✕ Close</button>
+          <iframe src="${embedUrl[num]}" class="pv-fs-iframe" frameborder="0" allow="autoplay"></iframe>
+        </div>`;
+      document.body.appendChild(modal);
+      requestAnimationFrame(()=>modal.classList.add('vis'));
+      modal.querySelector('.pv-fs-close').addEventListener('click',()=>{modal.classList.remove('vis');setTimeout(()=>modal.remove(),300)});
+      return;
+    }
     modal.innerHTML=`
       <div class="pv-backdrop"></div>
-      <div class="pv-content ${hasEmbed?'pv-has-embed':''} ${hasImage?'pv-has-img':''}">
+      <div class="pv-content ${hasImage?'pv-has-img':''}">
         <button class="pv-close">✕</button>
         <div class="pv-header">
           <span class="pv-num">Moment ${num}</span>
           <h2 class="pv-title">${title}</h2>
           <p class="pv-surface">${surfaces[num]||''}</p>
         </div>
-        ${hasEmbed?
-          `<div class="pv-embed-wrap"><iframe src="${embedUrl[num]}" class="pv-iframe" frameborder="0" allow="autoplay"></iframe><p class="pv-embed-hint">Navigate to Scene 1: The Nudge in the demo above</p></div>`:
+        ${
         hasImage?
           `<div class="pv-img-wrap"><img src="${images[num]}" alt="${title}" class="pv-img"></div>`:
           `<div class="pv-placeholder"><div class="pv-placeholder-inner"><p class="pv-ph-text">Product visualization</p><p class="pv-ph-sub">Design in progress — this will show the actual product experience for this moment.</p></div></div>`
