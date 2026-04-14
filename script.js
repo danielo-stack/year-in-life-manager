@@ -52,11 +52,8 @@
   /* ── Moments data ── */
   const MOMENTS = [
     { month:1,name:'January',type:'pull',layers:['self','others'],
-      isKeyMoment:true,keyNum:1,
-      keyTitle:'Maya\'s Profile & Team',keySub:'Nadia already knows how Maya leads.',
-      keyContext:'Maya was just promoted from IC to manager. Before she even opens Nadia, a rich profile has been built from coaching conversations, HRIS data, and collaboration patterns — for her and every person on her team.',
       title:"First day as manager",
-      brief:'See Maya\'s collaboration profile, her traits, and how Nadia understands each of her 8 direct reports.',
+      brief:'Maya starts as manager. Nadia reaches out before she even opens the app.',
       refs:['Maya\'s profile','Org chart','Team history'],
       learns:['Maya\'s leadership style','Peer-to-manager dynamics'],
       behavior:'Have a direct, early conversation with Jordan instead of letting tension build',
@@ -64,7 +61,7 @@
       buckets:{maya:'Peer-to-manager identity shift',team:'Jordan tension flagged from day one'},
     },
     { month:1,name:'January',type:'push',layers:['self'],
-      isKeyMoment:true,keyNum:2,
+      isKeyMoment:true,keyNum:1,
       keyTitle:'The Journey',keySub:'Nadia builds Maya a personalized development path.',
       keyContext:'Before Maya has even settled into her first week, Nadia sends a Teams message with a link to a curated journey — built around Maya\'s specific transition from IC to manager, her collaboration profile, and the team dynamics she\'s inheriting.',
       title:"Nadia sends Maya her first journey",
@@ -85,7 +82,7 @@
       buckets:{talent:'Goal profiles for 8 direct reports',maya:'Confronting avoidance pattern'},
     },
     { month:2,name:'February',type:'pull',layers:['others'],
-      isKeyMoment:true,keyNum:3,
+      isKeyMoment:true,keyNum:2,
       keyTitle:'The Redirect',keySub:'What you\'re about to do won\'t help her.',
       keyContext:'Priya missed a client deadline. Maya spent 40 minutes writing a feedback message. She thinks it\'s good — but it\'s wrapped in so much softening language that the actual feedback is invisible.',
       title:"Feedback to Priya",
@@ -145,7 +142,7 @@
       collabInsight:'Jordan development gap identified from Maya\'s observations',
     },
     { month:8,name:'August',type:'push',layers:['self','others','talent','ext','collab'],isConvergence:true,
-      isKeyMoment:true,keyNum:4,
+      isKeyMoment:true,keyNum:3,
       keyTitle:'The Convergence',keySub:'She saw it before Maya did.',
       keyContext:'A department is dissolved. Kai is being absorbed onto Maya\'s team — someone who didn\'t choose to be here. Meanwhile: Sam is on leave, Jordan\'s situation is still developing, the Priya-Alex dynamic is fragile, and the AI mandate is live.',
       title:"Everything converges",
@@ -677,9 +674,9 @@
 
     const modal=document.createElement('div');
     modal.id='productVizModal';modal.className='pv-modal';
-    const surfaces={1:'Collaboration Profile & Team',2:'Teams Message → Journeys',3:'In-chat Coaching Conversation',4:'My Work — Insights Tab'};
+    const surfaces={1:'Teams Message → Journeys',2:'In-chat Coaching Conversation',3:'My Work — Insights + Collaboration Profiles'};
     const images={};
-    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?moment=1',2:'https://nadia-demo-rosy.vercel.app/?moment=2',3:'https://nadia-demo-rosy.vercel.app/?moment=3',4:'https://nadia-demo-rosy.vercel.app/?moment=4'};
+    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?moment=2',2:'https://nadia-demo-rosy.vercel.app/?moment=3',3:'https://nadia-demo-rosy.vercel.app/?moment=4'};
     const hasEmbed=embedUrl[num];
     const hasImage=!hasEmbed&&images[num];
     if(hasEmbed){
@@ -973,8 +970,8 @@
 
       const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
       const arrowLabel=document.getElementById('tlArrowLabel');
-      // Start at index 2 (Moment 3) — moments 1-2 are close together, no need to skip between them
-      let nextKeyIdx=2;
+      // Start at index 1 (Moment 2) — Moment 1 is near the top
+      let nextKeyIdx=1;
 
       function updateNav(){
         if(nextKeyIdx<keyMomentEls.length){
@@ -983,7 +980,7 @@
         }else{
           arrowLabel.textContent='What\'s next →';
         }
-        if(resetBtn)resetBtn.classList.toggle('vis',nextKeyIdx>2);
+        if(resetBtn)resetBtn.classList.toggle('vis',nextKeyIdx>1);
       }
       updateNav();
 
@@ -1034,7 +1031,7 @@
         // Hide all moments
         allMoments.forEach(el=>el.classList.remove('vis','fast-reveal'));
         nextToReveal=0;
-        nextKeyIdx=2;
+        nextKeyIdx=1;
         // Reset knowledge counters
         dpCounts.maya=0;dpCounts.team=0;dpCounts.talent=0;dpCounts.external=0;
         prevTotal=0;
