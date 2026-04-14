@@ -1581,30 +1581,37 @@
   }
 
   function initChallenges(){
-    // Start empty — user clicks to add layers
-    drawChallenges('challengesCanvas',[]);
-    // After version shows all
-    drawChallenges('challengesCanvasAfter',['team','talent','org']);
+    let activeLayers=[];
 
-    // Toggle buttons — click to toggle layer on/off
+    function redrawBefore(){drawChallenges('challengesCanvas',activeLayers)}
+
+    // Draw when sections become visible (canvas needs dimensions)
+    const beforeSec=document.getElementById('challengesBefore');
+    const afterSec=document.getElementById('challengesAfter');
+    if(beforeSec){
+      new IntersectionObserver(e=>{if(e[0].isIntersecting)redrawBefore()},{threshold:.1}).observe(beforeSec);
+    }
+    if(afterSec){
+      new IntersectionObserver(e=>{if(e[0].isIntersecting)drawChallenges('challengesCanvasAfter',['team','talent','org'])},{threshold:.1}).observe(afterSec);
+    }
+
+    // Toggle buttons
     const toggles=document.querySelectorAll('#challengesBefore .ch-tog');
     toggles.forEach(btn=>{
       btn.addEventListener('click',()=>{
         if(btn.dataset.layer==='all'){
           toggles.forEach(b=>b.classList.add('active'));
+          activeLayers=['team','talent','org'];
         }else{
           btn.classList.toggle('active');
-          // Deactivate "show all" if any individual is off
           const allBtn=document.querySelector('#challengesBefore .ch-tog[data-layer="all"]');
           if(allBtn)allBtn.classList.remove('active');
+          activeLayers=[];
+          toggles.forEach(b=>{if(b.classList.contains('active')&&b.dataset.layer!=='all')activeLayers.push(b.dataset.layer)});
         }
-        const active=[];
-        toggles.forEach(b=>{if(b.classList.contains('active')&&b.dataset.layer!=='all')active.push(b.dataset.layer)});
-        drawChallenges('challengesCanvas',active);
-        // Update count
+        redrawBefore();
         const countEl=document.querySelector('#challengesBefore .ch-count');
-        const count=CHALLENGES.filter(c=>active.includes(c.layer)).length;
-        if(countEl)countEl.textContent=count+' challenges';
+        if(countEl)countEl.textContent=CHALLENGES.filter(c=>activeLayers.includes(c.layer)).length+' challenges';
       });
     });
   }
