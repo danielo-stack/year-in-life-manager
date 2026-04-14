@@ -1332,16 +1332,34 @@
   /* ═══════════════ SENTIMENT CHART ═══════════════ */
   /* ═══════════════ MEET MAYA TOGGLE ═══════════════ */
   function initMeetToggle(){
-    const btns=document.querySelectorAll('.mt-btn');
+    // Profile/Team toggle
+    const tabs=document.querySelectorAll('.mp-tab');
     const profile=document.getElementById('meetProfile');
     const team=document.getElementById('meetTeam');
-    if(!btns.length||!profile||!team)return;
-    btns.forEach(b=>b.addEventListener('click',()=>{
-      btns.forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      const v=b.dataset.view;
-      profile.classList.toggle('hidden',v!=='profile');
-      team.classList.toggle('hidden',v!=='team');
+    if(tabs.length&&profile&&team){
+      tabs.forEach(t=>t.addEventListener('click',()=>{
+        tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');
+        const v=t.dataset.view;
+        profile.classList.toggle('hidden',v!=='profile');
+        team.classList.toggle('hidden',v!=='team');
+      }));
+    }
+
+    // Dimension deep dive tabs
+    const ddTabs=document.querySelectorAll('.mp-dd-tab');
+    const dims={
+      energy:{highlights:['Warm and approachable','Builds rapport quickly','Energized by collaboration','Leads through relationships','Balances social energy well'],title:'How Maya manages energy',desc:'Maya draws energy from connecting with people but knows when to step back and recharge.',bullets:['Thrives in collaborative 1:1 settings','May over-invest in relational dynamics under stress','Builds momentum through personal connection']},
+      info:{highlights:['Reads people and situations intuitively','Picks up on unspoken dynamics','Trusts instinct alongside data','Sees the big picture first','Balances with concrete details when needed'],title:'How Maya processes information',desc:'Maya tends to lead with intuition — sensing what\'s happening on the team before data confirms it.',bullets:['Notices shifts in team energy before they surface','May need prompting to ground instinct in evidence','Strong pattern recognition across relationships']},
+      decision:{highlights:['People-first decision maker','Values team impact and fairness','Empathetic under pressure','Considers emotional stakes','Can engage logic when prompted'],title:'How Maya makes decisions',desc:'Maya leads with empathy, ensuring decisions account for how people will feel and respond.',bullets:['Weighs relational impact heavily in trade-offs','May delay tough calls to protect relationships','Strengths shine in people-centric decisions']},
+      org:{highlights:['Flexible and adaptive','Prefers organic over rigid','Adjusts plans as context shifts','Creates space for exploration','Adds structure when the team needs it'],title:'How Maya stays organized',desc:'Maya prefers flexibility, adapting her approach as the team\'s needs evolve.',bullets:['Lets the team shape workflows collaboratively','May under-structure when clarity is needed','Adapts quickly to changing priorities']},
+    };
+    ddTabs.forEach(t=>t.addEventListener('click',()=>{
+      ddTabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');
+      const d=dims[t.dataset.dim];if(!d)return;
+      document.getElementById('ddHighlights').innerHTML=d.highlights.map(h=>'<li>'+h+'</li>').join('');
+      document.getElementById('ddTitle').textContent=d.title;
+      document.getElementById('ddDesc').textContent=d.desc;
+      document.getElementById('ddBullets').innerHTML=d.bullets.map(b=>'<li>'+b+'</li>').join('');
     }));
   }
 
