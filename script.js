@@ -197,7 +197,50 @@
       buckets:{talent:'Year-end reviews from full context',team:'Every report fully understood'},
       collabInsight:'Full collaboration map complete',
     },
+    // ── Filler conversations (headline-only, show volume) ──
+    {month:1,name:'January',title:'1:1 prep with Jordan',brief:'Nadia helps Maya prepare talking points for her first 1:1.',buckets:{team:'Jordan 1:1 context'}},
+    {month:1,name:'January',title:'Welcome message drafting',brief:'Maya asks Nadia to help craft her first team-wide message.',buckets:{maya:'Communication style captured'}},
+    {month:1,name:'January',title:'Calendar review',brief:'Nadia flags that Maya has no 1:1s scheduled in week one.',buckets:{maya:'Calendar patterns noted'}},
+    {month:2,name:'February',title:'Slack tone check',brief:'Maya asks Nadia to review a Slack message before sending.',buckets:{maya:'Written communication coaching'}},
+    {month:2,name:'February',title:'Skip-level prep',brief:'Maya prepares for her first skip-level with the VP.',buckets:{maya:'Upward communication practice'}},
+    {month:2,name:'February',title:'Team meeting facilitation',brief:'Nadia coaches Maya on running a more inclusive team meeting.',buckets:{team:'Meeting dynamics observed'}},
+    {month:3,name:'March',title:'Delegation coaching',brief:'Maya is doing too much herself — Nadia helps her delegate.',buckets:{maya:'Delegation patterns identified'}},
+    {month:3,name:'March',title:'Cross-functional friction',brief:'Tension with the Product team on project timelines.',buckets:{team:'Cross-team dynamics tracked'}},
+    {month:3,name:'March',title:'Lin career conversation',brief:'Lin asks about promotion timeline. Maya prepares with Nadia.',buckets:{team:'Lin expectations captured'}},
+    {month:3,name:'March',title:'Email coaching: stakeholder update',brief:'Nadia helps Maya rewrite a project update for leadership.',buckets:{maya:'Executive writing improved'}},
+    {month:4,name:'April',title:'Sam workload discussion',brief:'Sam seems stretched. Maya thinks through redistribution.',buckets:{team:'Sam capacity flagged'}},
+    {month:4,name:'April',title:'Conflict between Alex and Priya',brief:'A project handoff goes sideways. Nadia helps Maya mediate.',buckets:{team:'Alex-Priya dynamic deepening'}},
+    {month:4,name:'April',title:'Weekly reflection',brief:'Maya reflects on what went well and what she\'d change.',buckets:{maya:'Self-awareness building'}},
+    {month:5,name:'May',title:'Jordan project ownership',brief:'Jordan takes the lead on Q2 initiative. Maya sets expectations.',buckets:{team:'Jordan development investment'}},
+    {month:5,name:'May',title:'Feedback from a peer',brief:'A cross-functional partner gives Maya feedback. She processes it.',buckets:{maya:'External feedback integrated'}},
+    {month:5,name:'May',title:'Team morale check-in',brief:'Nadia prompts Maya to pulse-check the team after a tough sprint.',buckets:{team:'Team sentiment captured'}},
+    {month:6,name:'June',title:'AI mandate kickoff',brief:'Maya figures out how to introduce the AI initiative to her team.',buckets:{external:'AI mandate response planned'}},
+    {month:6,name:'June',title:'Sam leave planning',brief:'Sam\'s parental leave coverage needs detailed planning.',buckets:{team:'Coverage plan created'}},
+    {month:6,name:'June',title:'1:1 with Marcus',brief:'Marcus seems disengaged. Maya explores what\'s going on.',buckets:{team:'Marcus engagement noted'}},
+    {month:6,name:'June',title:'Quarterly retro facilitation',brief:'Nadia helps Maya design a team retrospective format.',buckets:{team:'Team reflection facilitated'}},
+    {month:7,name:'July',title:'Jordan career check-in',brief:'Maya has the career conversation she\'d been postponing.',buckets:{team:'Jordan career investment'}},
+    {month:7,name:'July',title:'Priya stakeholder presentation',brief:'Priya presents to leadership. Maya coaches her prep.',buckets:{team:'Priya visibility growing'}},
+    {month:7,name:'July',title:'Mid-year self-reflection',brief:'Nadia prompts Maya to reflect on her own growth arc.',buckets:{maya:'Growth trajectory visible'}},
+    {month:8,name:'August',title:'Kai onboarding plan',brief:'Nadia helps Maya create a tailored plan for Kai\'s first week.',buckets:{team:'Kai integration started'}},
+    {month:8,name:'August',title:'Tomás introduction',brief:'Maya thinks through how to frame Tomás\'s arrival to the team.',buckets:{team:'Tomás integration started'}},
+    {month:8,name:'August',title:'Team meeting: new members',brief:'The first all-hands with Tomás and Kai. Maya prepares framing.',buckets:{team:'Team composition shift managed'}},
+    {month:9,name:'September',title:'360 feedback processing',brief:'Maya works through her own 360 results with Nadia.',buckets:{maya:'360 insights integrated'}},
+    {month:9,name:'September',title:'Alex ownership expansion',brief:'Alex takes on more scope. Maya sets clear expectations.',buckets:{team:'Alex development accelerating'}},
+    {month:9,name:'September',title:'Cross-team collaboration',brief:'Maya bridges a gap between her team and Design.',buckets:{team:'Cross-functional trust building'}},
+    {month:10,name:'October',title:'Team anxiety after layoffs',brief:'Adjacent team had layoffs. Maya\'s team is unsettled.',buckets:{external:'Organizational uncertainty managed'}},
+    {month:10,name:'October',title:'Lin recognition moment',brief:'Lin delivers great work. Maya writes a thoughtful recognition.',buckets:{team:'Lin valued and recognized'}},
+    {month:10,name:'October',title:'Difficult email from leadership',brief:'Maya processes a vague directive and decides how to act.',buckets:{maya:'Ambiguity navigation'}},
+    {month:11,name:'November',title:'Marcus role-fit conversation prep',brief:'Maya prepares for the most direct conversation of her year.',buckets:{team:'Role alignment discussion prepared'}},
+    {month:11,name:'November',title:'Comp conversation coaching',brief:'Nadia helps Maya prepare for compensation discussions.',buckets:{talent:'Comp conversations prepared'}},
+    {month:11,name:'November',title:'Holiday planning and coverage',brief:'Maya plans team coverage for the holidays.',buckets:{team:'Holiday coverage organized'}},
+    {month:11,name:'November',title:'Priya promotion readiness',brief:'Maya assesses whether Priya is ready for more scope.',buckets:{team:'Priya trajectory assessed'}},
+    {month:12,name:'December',title:'Review prep: Jordan',brief:'Nadia surfaces the full year of context for Jordan\'s review.',buckets:{talent:'Jordan review context ready'}},
+    {month:12,name:'December',title:'Review prep: Alex & Priya',brief:'The competition arc becomes a development story.',buckets:{talent:'Team dynamic documented'}},
+    {month:12,name:'December',title:'Year-end team celebration',brief:'Maya plans a meaningful end-of-year acknowledgment.',buckets:{team:'Team recognition moment'}},
+    {month:12,name:'December',title:'Maya\'s own reflection',brief:'Nadia prompts Maya to reflect on her transformation this year.',buckets:{maya:'Full year growth arc captured'}},
   ];
+  // Sort all moments chronologically
+  MOMENTS.sort((a,b)=>a.month-b.month);
 
   /* ═══════════════ ORG NETWORK MAP ═══════════════ */
   const DEPTS=[
@@ -898,6 +941,24 @@
       const p=Math.min(100,(scrollY/(document.documentElement.scrollHeight-innerHeight))*100);
       document.getElementById('scrollBar').style.width=p+'%';tick=false;
     });tick=true}},{passive:true});
+
+    // Floating next-moment arrow
+    const arrow=document.getElementById('tlNextArrow');
+    if(arrow){
+      // Show arrow when timeline is in view
+      new IntersectionObserver(e=>{arrow.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
+      arrow.addEventListener('click',()=>{
+        // Find the next moment card that's below the current viewport
+        const viewBottom=scrollY+innerHeight*.4;
+        for(const m of allMoments){
+          const rect=m.getBoundingClientRect();
+          if(rect.top+scrollY>viewBottom+50){
+            m.scrollIntoView({behavior:'smooth',block:'center'});
+            break;
+          }
+        }
+      });
+    }
   }
 
   function updateTL(month){
