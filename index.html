@@ -119,8 +119,8 @@
     <div class="meet-inner">
       <!-- Toggle -->
       <div class="meet-toggle" id="meetToggle">
-        <button class="mt-btn active" data-view="profile">Maya's Profile</button>
-        <button class="mt-btn" data-view="team">Maya's Team</button>
+        <button class="mt-btn active" onclick="document.getElementById('meetProfile').classList.remove('hidden');document.getElementById('meetTeam').classList.add('hidden');this.classList.add('active');this.nextElementSibling.classList.remove('active')">Maya's Profile</button>
+        <button class="mt-btn" onclick="document.getElementById('meetTeam').classList.remove('hidden');document.getElementById('meetProfile').classList.add('hidden');this.classList.add('active');this.previousElementSibling.classList.remove('active')">Maya's Team</button>
       </div>
 
       <!-- PROFILE VIEW -->
