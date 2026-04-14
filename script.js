@@ -1019,8 +1019,8 @@
       // NEXT
       arrow.addEventListener('click',()=>{
         if(nextKeyIdx>=keyMomentEls.length){
-          const evo=document.getElementById('evoSection');
-          if(evo)evo.scrollIntoView({behavior:'smooth'});
+          const recap=document.getElementById('challengesAfter')||document.getElementById('evoSection');
+          if(recap)recap.scrollIntoView({behavior:'smooth'});
           navContainer.classList.remove('vis');
           return;
         }
@@ -1542,6 +1542,8 @@
     {label:'AI productivity\ntargets for\nnext year',month:11,row:0.5,layer:'org',color:'#EF4444'},
   ];
 
+  const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
   function drawChallenges(cvId,visibleLayers){
     const cv=document.getElementById(cvId);if(!cv)return;
     const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
@@ -1554,13 +1556,13 @@
 
     ctx.clearRect(0,0,w,h);
 
-    // Grid lines
+    // Grid lines with month names
     for(let m=1;m<=12;m++){
       const x=pad.l+((m-.5)/12)*pw;
       ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);
       ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;ctx.stroke();
-      ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='11px "DM Sans"';ctx.textAlign='center';
-      ctx.fillText(m,x,h-pad.b+18);
+      ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='11px "DM Sans"';ctx.textAlign='center';
+      ctx.fillText(MONTH_NAMES[m-1],x,h-pad.b+18);
     }
 
     // Draw challenges
@@ -1582,23 +1584,30 @@
   }
 
   function initChallenges(){
-    // Draw both canvases
-    const layers=['team','talent','org'];
-    drawChallenges('challengesCanvas',layers);
-    drawChallenges('challengesCanvasAfter',layers);
+    // Start empty — user clicks to add layers
+    drawChallenges('challengesCanvas',[]);
+    // After version shows all
+    drawChallenges('challengesCanvasAfter',['team','talent','org']);
 
-    // Toggle buttons
-    document.querySelectorAll('.ch-tog').forEach(btn=>{
+    // Toggle buttons — click to toggle layer on/off
+    const toggles=document.querySelectorAll('#challengesBefore .ch-tog');
+    toggles.forEach(btn=>{
       btn.addEventListener('click',()=>{
         if(btn.dataset.layer==='all'){
-          document.querySelectorAll('.ch-tog').forEach(b=>b.classList.add('active'));
-          drawChallenges('challengesCanvas',['team','talent','org']);
-          return;
+          toggles.forEach(b=>b.classList.add('active'));
+        }else{
+          btn.classList.toggle('active');
+          // Deactivate "show all" if any individual is off
+          const allBtn=document.querySelector('#challengesBefore .ch-tog[data-layer="all"]');
+          if(allBtn)allBtn.classList.remove('active');
         }
-        btn.classList.toggle('active');
         const active=[];
-        document.querySelectorAll('.ch-tog.active').forEach(b=>{if(b.dataset.layer!=='all')active.push(b.dataset.layer)});
+        toggles.forEach(b=>{if(b.classList.contains('active')&&b.dataset.layer!=='all')active.push(b.dataset.layer)});
         drawChallenges('challengesCanvas',active);
+        // Update count
+        const countEl=document.querySelector('#challengesBefore .ch-count');
+        const count=CHALLENGES.filter(c=>active.includes(c.layer)).length;
+        if(countEl)countEl.textContent=count+' challenges';
       });
     });
   }
