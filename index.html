@@ -116,138 +116,69 @@
   <!-- MEET MAYA — Profile + Team                  -->
   <!-- ═══════════════════════════════════════════ -->
   <section class="meet-section" id="meetSection">
-    <!-- Full-screen product feel — no padding, browser fills viewport -->
-    <div class="meet-browser-full">
-      <!-- Browser chrome -->
-      <div class="mb-bar">
-        <span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span>
-        <span class="mb-url">valence.co</span>
+    <div class="meet-inner">
+      <!-- Toggle -->
+      <div class="meet-toggle" id="meetToggle">
+        <button class="mt-btn active" data-view="profile">Maya's Profile</button>
+        <button class="mt-btn" data-view="team">Maya's Team</button>
       </div>
-      <!-- App layout: sidebar + content -->
-      <div class="mb-app">
-        <!-- Left sidebar -->
-        <div class="mb-sidebar">
-          <div class="mb-s-icon active">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="2" y1="7" x2="14" y2="7"/></svg>
-          </div>
-          <div class="mb-s-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="8" x2="10" y2="10"/></svg></div>
-          <div class="mb-s-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h10M3 12h6"/></svg></div>
-          <div class="mb-s-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12l4-8 4 8"/></svg></div>
-        </div>
-        <!-- Main content area -->
-        <div class="mb-main">
-          <!-- Toggle tabs inside the app -->
-          <div class="mp-tabs">
-            <button class="mp-tab active" data-view="profile">Maya's Profile</button>
-            <button class="mp-tab" data-view="team">Maya's Team</button>
-          </div>
 
-          <!-- PROFILE VIEW -->
-          <div class="meet-view" id="meetProfile">
-            <div class="mp-scroll">
-              <div class="mp-header">
-                <div class="mp-circles"><div class="mp-c1"></div><div class="mp-c2"></div><div class="mp-c3"></div></div>
-                <div>
-                  <h2 class="mp-title">Your collaboration profile</h2>
-                  <p class="mp-sub2">Help others understand how to work with you effectively.</p>
-                  <p class="mp-sub3">Visible to your organization · Last updated April 2026</p>
-                </div>
-              </div>
-
-              <!-- Profile card with expanded bio -->
-              <div class="mp-card">
-                <div class="mp-card-top">
-                  <div class="mp-avatar">MR</div>
-                  <div>
-                    <strong class="mp-name">Maya Rodriguez</strong>
-                    <span class="mp-badge">Connector</span>
-                  </div>
-                </div>
-                <p class="mp-type-desc">You're a <strong>Connector</strong>. Empathetic, relationship-driven leaders who build trust and psychological safety, creating teams where people feel heard and supported.</p>
-                <p class="mp-bio">Maya is a first-year manager in the Operations group, recently promoted from an IC role. She leads a team of 8 and is known for building strong relationships — though she's working on being more direct when it matters. Her goals include developing executive presence, improving feedback delivery, and leading through organizational change.</p>
-                <div class="mp-meta">
-                  <div><span class="mp-meta-l">Role</span><span class="mp-meta-v">Manager, Operations</span></div>
-                  <div><span class="mp-meta-l">Team</span><span class="mp-meta-v">8 direct reports</span></div>
-                  <div><span class="mp-meta-l">Level</span><span class="mp-meta-v">People Manager</span></div>
-                  <div><span class="mp-meta-l">Organization</span><span class="mp-meta-v">ACME Corp</span></div>
-                </div>
-              </div>
-
-              <!-- Traits -->
-              <h3 class="mp-section-title">Your Traits</h3>
-              <div class="mp-traits-card">
-                <div class="mp-trait"><span class="mp-trait-label">Energy</span><span class="mp-trait-badge" style="color:#2563EB">Balanced</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:50%;background:#2563EB"></div><span class="mp-trait-end-l">Extroverted</span><span class="mp-trait-end-r">Introverted</span></div></div>
-                <div class="mp-trait"><span class="mp-trait-label">Information Processing</span><span class="mp-trait-badge" style="color:#D97706">Skews Intuiting</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:62%;background:#D97706"></div><span class="mp-trait-end-l">Observing</span><span class="mp-trait-end-r">Intuiting</span></div></div>
-                <div class="mp-trait"><span class="mp-trait-label">Decision Making</span><span class="mp-trait-badge" style="color:#16A34A">Primarily Feeling</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:72%;background:#16A34A"></div><span class="mp-trait-end-l">Thinking</span><span class="mp-trait-end-r">Feeling</span></div></div>
-                <div class="mp-trait"><span class="mp-trait-label">Organization</span><span class="mp-trait-badge" style="color:#D97706">Skews Exploratory</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:60%;background:#D97706"></div><span class="mp-trait-end-l">Structured</span><span class="mp-trait-end-r">Exploratory</span></div></div>
-              </div>
-
-              <!-- Dimension Deep Dive -->
-              <h3 class="mp-section-title">Dimension Deep Dive</h3>
-              <div class="mp-deepdive">
-                <div class="mp-dd-tabs">
-                  <button class="mp-dd-tab active" style="--tc:#2563EB" data-dim="energy">Energy</button>
-                  <button class="mp-dd-tab" style="--tc:#D97706" data-dim="info">Information</button>
-                  <button class="mp-dd-tab" style="--tc:#16A34A" data-dim="decision">Decisions</button>
-                  <button class="mp-dd-tab" style="--tc:#D97706" data-dim="org">Organization</button>
-                </div>
-                <div class="mp-dd-content" id="ddContent">
-                  <div class="mp-dd-grid">
-                    <div class="mp-dd-box">
-                      <h4>The Highlights</h4>
-                      <ul id="ddHighlights">
-                        <li>Warm and approachable</li><li>Builds rapport quickly</li><li>Energized by collaboration</li><li>Leads through relationships</li><li>Balances social energy well</li>
-                      </ul>
-                    </div>
-                    <div class="mp-dd-box">
-                      <h4 id="ddTitle">How Maya manages energy</h4>
-                      <p id="ddDesc">Maya draws energy from connecting with people but knows when to step back and recharge. She balances team time with focused solo work.</p>
-                      <ul id="ddBullets">
-                        <li>Thrives in collaborative 1:1 settings</li><li>May over-invest in relational dynamics under stress</li><li>Builds momentum through personal connection</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Character Summary -->
-              <h3 class="mp-section-title">Character Summary</h3>
-              <div class="mp-summary-grid">
-                <div class="mp-sum-card str">
-                  <h4>Strengths</h4>
-                  <div class="mp-sum-item"><strong>Relationship Builder:</strong> Creates psychological safety and trust across the team.</div>
-                  <div class="mp-sum-item"><strong>Empathetic Listener:</strong> Team members feel genuinely heard in 1:1s.</div>
-                  <div class="mp-sum-item"><strong>Growth Mindset:</strong> Actively seeks coaching and applies feedback.</div>
-                </div>
-                <div class="mp-sum-card grow">
-                  <h4>Growth Areas</h4>
-                  <div class="mp-sum-item"><strong>Directness:</strong> Tends to soften feedback, which can leave people guessing.</div>
-                  <div class="mp-sum-item"><strong>Executive Presence:</strong> Undersells team's work in senior settings.</div>
-                  <div class="mp-sum-item"><strong>Boundary Setting:</strong> Takes on too much to avoid disappointing others.</div>
-                </div>
+      <!-- PROFILE VIEW -->
+      <div class="meet-view" id="meetProfile">
+        <div class="meet-browser">
+          <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
+          <div class="mb-content">
+            <div class="mp-header">
+              <div class="mp-circles"><div class="mp-c1"></div><div class="mp-c2"></div><div class="mp-c3"></div></div>
+              <div>
+                <h2 class="mp-title">Your collaboration profile</h2>
+                <p class="mp-sub">Help others understand how to work with you effectively.</p>
               </div>
             </div>
+            <div class="mp-card">
+              <div class="mp-card-top">
+                <div class="mp-avatar">MR</div>
+                <div><strong class="mp-name">Maya Rodriguez</strong><span class="mp-badge">Connector</span></div>
+              </div>
+              <p class="mp-desc">You're a Connector. Empathetic, relationship-driven leaders who build trust and psychological safety, creating teams where people feel heard and supported.</p>
+              <div class="mp-meta">
+                <div><span class="mp-meta-l">Role</span><span class="mp-meta-v">Manager, Operations</span></div>
+                <div><span class="mp-meta-l">Team</span><span class="mp-meta-v">8 direct reports</span></div>
+                <div><span class="mp-meta-l">Tenure</span><span class="mp-meta-v">First year as manager</span></div>
+              </div>
+            </div>
+            <h3 class="mp-traits-title">Your Traits</h3>
+            <div class="mp-traits">
+              <div class="mp-trait"><span class="mp-trait-label">Energy</span><span class="mp-trait-badge" style="color:#2563EB">Balanced</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:50%;background:#2563EB"></div><span class="mp-trait-end-l">Extroverted</span><span class="mp-trait-end-r">Introverted</span></div></div>
+              <div class="mp-trait"><span class="mp-trait-label">Information</span><span class="mp-trait-badge" style="color:#D97706">Skews Intuiting</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:62%;background:#D97706"></div><span class="mp-trait-end-l">Observing</span><span class="mp-trait-end-r">Intuiting</span></div></div>
+              <div class="mp-trait"><span class="mp-trait-label">Decisions</span><span class="mp-trait-badge" style="color:#16A34A">Primarily Feeling</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:72%;background:#16A34A"></div><span class="mp-trait-end-l">Thinking</span><span class="mp-trait-end-r">Feeling</span></div></div>
+              <div class="mp-trait"><span class="mp-trait-label">Organization</span><span class="mp-trait-badge" style="color:#D97706">Skews Exploratory</span><div class="mp-trait-bar"><div class="mp-trait-dot" style="left:60%;background:#D97706"></div><span class="mp-trait-end-l">Structured</span><span class="mp-trait-end-r">Exploratory</span></div></div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <!-- TEAM VIEW -->
-          <div class="meet-view hidden" id="meetTeam">
-            <div class="mp-scroll">
-              <h2 class="mt-heading">Maya's Team</h2>
-              <p class="mt-subheading">8 Members</p>
-              <div class="tm-manager">
-                <div class="tm-avatar mgr" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">MR</div>
-                <div><strong>Maya Rodriguez</strong><span class="tm-role">Manager · Connector</span></div>
-              </div>
-              <div class="tm-grid">
-                <div class="tm-member"><div class="tm-avatar">JT</div><strong>Jordan</strong><span class="tm-role">Senior Associate</span><p>Prefers autonomy and clear objectives. Thrives with ownership of complex challenges.</p><div class="tm-tags"><span>Execution-focused</span><span>Systematic</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">PR</div><strong>Priya</strong><span class="tm-role">Associate</span><p>Values being heard before absorbing critique. Responds best to specific, example-based feedback.</p><div class="tm-tags"><span>Collaborative</span><span>Detail-oriented</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">AX</div><strong>Alex</strong><span class="tm-role">Associate</span><p>Direct and structured. Responds well to clearly defined ownership and concrete deliverables.</p><div class="tm-tags"><span>Assertive</span><span>Pragmatic</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">SC</div><strong>Sam</strong><span class="tm-role">Senior Analyst</span><p>Steady and dependable. Coverage-critical for key workstreams across the team.</p><div class="tm-tags"><span>Reliable</span><span>Thorough</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">TM</div><strong>Tomás</strong><span class="tm-role">Analyst</span><p>Highly collaborative but builds trust slowly. Needs consistency before opening up.</p><div class="tm-tags"><span>Collaborative</span><span>Trust-builder</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">KI</div><strong>Kai</strong><span class="tm-role">Analyst</span><p>Independent and direct. Builds trust through clarity and a defined role, not rituals.</p><div class="tm-tags"><span>Independent</span><span>Direct</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">MC</div><strong>Marcus</strong><span class="tm-role">Associate</span><p>Needs clearer role alignment. Strengths are strong but may be better suited elsewhere.</p><div class="tm-tags"><span>Willing</span><span>Reflective</span></div></div>
-                <div class="tm-member"><div class="tm-avatar">LN</div><strong>Lin</strong><span class="tm-role">Coordinator</span><p>Reliable and sometimes overlooked. Values recognition and clear expectations.</p><div class="tm-tags"><span>Reliable</span><span>Organized</span></div></div>
-              </div>
+      <!-- TEAM VIEW -->
+      <div class="meet-view hidden" id="meetTeam">
+        <div class="meet-browser">
+          <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
+          <div class="mb-content">
+            <h2 class="mt-title">Maya's Team</h2>
+            <p class="mt-sub">8 Members</p>
+            <!-- Maya manager card -->
+            <div class="tm-manager">
+              <div class="tm-avatar mgr" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">MR</div>
+              <div><strong>Maya Rodriguez</strong><span class="tm-role">Manager · Connector</span></div>
+            </div>
+            <div class="tm-grid">
+              <div class="tm-member"><div class="tm-avatar">JT</div><strong>Jordan</strong><span class="tm-role">Senior Associate</span><p>Prefers autonomy and clear objectives. Thrives with ownership of complex challenges.</p><div class="tm-tags"><span>Execution-focused</span><span>Systematic</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">PR</div><strong>Priya</strong><span class="tm-role">Associate</span><p>Values being heard before absorbing critique. Responds best to specific, example-based feedback.</p><div class="tm-tags"><span>Collaborative</span><span>Detail-oriented</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">AX</div><strong>Alex</strong><span class="tm-role">Associate</span><p>Direct and structured. Responds well to clearly defined ownership and concrete deliverables.</p><div class="tm-tags"><span>Assertive</span><span>Pragmatic</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">SC</div><strong>Sam</strong><span class="tm-role">Senior Analyst</span><p>Steady and dependable. Undervalued by the team. Coverage-critical for key workstreams.</p><div class="tm-tags"><span>Reliable</span><span>Thorough</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">TM</div><strong>Tomás</strong><span class="tm-role">Analyst</span><p>Highly collaborative but builds trust slowly. Needs consistency before opening up.</p><div class="tm-tags"><span>Collaborative</span><span>Trust-builder</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">KI</div><strong>Kai</strong><span class="tm-role">Analyst</span><p>Independent and direct. Builds trust through clarity and a defined role, not rituals.</p><div class="tm-tags"><span>Independent</span><span>Direct</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">MC</div><strong>Marcus</strong><span class="tm-role">Associate</span><p>Needs clearer role alignment. Strengths may be better suited to a different position.</p><div class="tm-tags"><span>Willing</span><span>Misaligned</span></div></div>
+              <div class="tm-member"><div class="tm-avatar">LN</div><strong>Lin</strong><span class="tm-role">Coordinator</span><p>Reliable and sometimes overlooked. Expected a promotion. Values recognition.</p><div class="tm-tags"><span>Reliable</span><span>Organized</span></div></div>
             </div>
           </div>
         </div>
