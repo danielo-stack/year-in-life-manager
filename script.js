@@ -609,7 +609,7 @@
       if(m.isKeyMoment)cls+=' key-moment';
       el.className=cls;el.dataset.month=m.month;el.dataset.idx=idx;
 
-      const pips=m.layers.map(l=>`<div class="m-pip" style="background:${C[l]||'#888'}"></div>`).join('');
+      const pips=(m.layers||[]).map(l=>`<div class="m-pip" style="background:${C[l]||'#888'}"></div>`).join('');
 
       if(m.isKeyMoment){
         // ── KEY MOMENT: large card with product viz placeholder ──
