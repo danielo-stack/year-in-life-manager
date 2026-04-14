@@ -185,11 +185,8 @@
       buckets:{team:'Difficult conversation navigated with directness'},
     },
     { month:12,name:'December',type:'push',layers:['talent','others'],isTalent:true,
-      isKeyMoment:true,keyNum:5,
-      keyTitle:'Performance Management',keySub:'You don\'t have to remember everything. I did.',
-      keyContext:'It\'s December. Performance review season. Maya has 8 reviews due in two weeks. She hasn\'t kept a running notes doc — but Nadia has been building the evidence all year.',
       title:"Year-end reviews",
-      brief:'Nadia has already drafted 75% of each review from a full year of coaching context. She asks Maya for the last 25% — the judgment calls only a manager can make. Reviews push directly to the HRIS.',
+      brief:'Performance reviews due. Nadia carries the full year of context.',
       refs:['Full year of coaching context','Every interaction across all 8 reports','All talent milestones','Goal trajectories','Collaboration intelligence map'],
       learns:['Complete talent picture for each person','Year-long growth arcs','Team-level patterns'],
       behavior:'Write reviews from a full year of evidence — give every person the review they deserve',
@@ -680,9 +677,9 @@
 
     const modal=document.createElement('div');
     modal.id='productVizModal';modal.className='pv-modal';
-    const surfaces={1:'Collaboration Profile & Team',2:'Teams Message → Journeys',3:'In-chat Coaching Conversation',4:'My Work — Insights Tab',5:'Performance Reviews → HRIS'};
+    const surfaces={1:'Collaboration Profile & Team',2:'Teams Message → Journeys',3:'In-chat Coaching Conversation',4:'My Work — Insights Tab'};
     const images={};
-    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?moment=1',2:'https://nadia-demo-rosy.vercel.app/?moment=2',3:'https://nadia-demo-rosy.vercel.app/?moment=3',4:'https://nadia-demo-rosy.vercel.app/?moment=4',5:'https://nadia-demo-rosy.vercel.app/?moment=5'};
+    const embedUrl={1:'https://nadia-demo-rosy.vercel.app/?moment=1',2:'https://nadia-demo-rosy.vercel.app/?moment=2',3:'https://nadia-demo-rosy.vercel.app/?moment=3',4:'https://nadia-demo-rosy.vercel.app/?moment=4'};
     const hasEmbed=embedUrl[num];
     const hasImage=!hasEmbed&&images[num];
     if(hasEmbed){
@@ -1518,6 +1515,94 @@
   }
 
   /* ═══════════════ SENTIMENT CHART ═══════════════ */
+  /* ═══════════════ CHALLENGES SCATTER PLOT ═══════════════ */
+  const CHALLENGES=[
+    // Team (green) — relational
+    {label:'Former peer,\nnew dynamic',month:1,row:4,layer:'team',color:'#10B981'},
+    {label:'First critical\nfeedback',month:2.5,row:3,layer:'team',color:'#10B981'},
+    {label:'Two stars,\none spotlight',month:4,row:4,layer:'team',color:'#10B981'},
+    {label:'"You\'re too\nnice"',month:5,row:3,layer:'team',color:'#10B981'},
+    {label:'Key person going\non leave',month:7,row:4,layer:'team',color:'#10B981'},
+    {label:'Retention crisis',month:9,row:3,layer:'team',color:'#10B981'},
+    {label:'Managing\nsomeone out',month:10,row:4,layer:'team',color:'#10B981'},
+    {label:'Promotion\ndisappointment',month:11,row:3,layer:'team',color:'#10B981'},
+    // Talent Moments (purple) — organizational
+    {label:'Goal setting',month:1,row:2,layer:'talent',color:'#6366F1'},
+    {label:'Development\nplans due',month:3,row:2,layer:'talent',color:'#6366F1'},
+    {label:'Engagement\nsurvey results',month:5,row:1.5,layer:'talent',color:'#6366F1'},
+    {label:'Talent review —\nID high-potentials',month:6,row:2,layer:'talent',color:'#6366F1'},
+    {label:'Mid-year reviews',month:8,row:2,layer:'talent',color:'#6366F1'},
+    {label:'360 feedback',month:9,row:2,layer:'talent',color:'#6366F1'},
+    {label:'Year-end\nperformance\nreviews',month:11,row:1.5,layer:'talent',color:'#6366F1'},
+    {label:'Compensation\nconversations',month:12,row:2,layer:'talent',color:'#6366F1'},
+    // Org Dynamics (red/orange) — transformation
+    {label:'AI transformation\ninitiative',month:2,row:0.5,layer:'org',color:'#EF4444'},
+    {label:'Reorg hits',month:5,row:0.5,layer:'org',color:'#EF4444'},
+    {label:'Layoffs in\nadjacent team',month:8,row:0.5,layer:'org',color:'#EF4444'},
+    {label:'AI productivity\ntargets for\nnext year',month:11,row:0.5,layer:'org',color:'#EF4444'},
+  ];
+
+  function drawChallenges(cvId,visibleLayers){
+    const cv=document.getElementById(cvId);if(!cv)return;
+    const ctx=cv.getContext('2d');const dpr=devicePixelRatio||1;
+    const rect=cv.getBoundingClientRect();
+    cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const w=rect.width,h=rect.height;
+    const pad={l:40,r:20,t:20,b:40};
+    const pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+
+    ctx.clearRect(0,0,w,h);
+
+    // Grid lines
+    for(let m=1;m<=12;m++){
+      const x=pad.l+((m-.5)/12)*pw;
+      ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);
+      ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='11px "DM Sans"';ctx.textAlign='center';
+      ctx.fillText(m,x,h-pad.b+18);
+    }
+
+    // Draw challenges
+    CHALLENGES.forEach(ch=>{
+      if(!visibleLayers.includes(ch.layer))return;
+      const x=pad.l+((ch.month-.5)/12)*pw;
+      const y=pad.t+pad.t+ch.row*(ph/5);
+      // Dot
+      ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fillStyle=ch.color;ctx.fill();
+      ctx.shadowColor=ch.color;ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+      // Label
+      ctx.fillStyle=ch.color;ctx.font='600 10px "DM Sans"';ctx.textAlign='center';
+      const lines=ch.label.split('\n');
+      lines.forEach((line,i)=>{
+        ctx.fillText(line,x,y-12-((lines.length-1-i)*12));
+      });
+    });
+  }
+
+  function initChallenges(){
+    // Draw both canvases
+    const layers=['team','talent','org'];
+    drawChallenges('challengesCanvas',layers);
+    drawChallenges('challengesCanvasAfter',layers);
+
+    // Toggle buttons
+    document.querySelectorAll('.ch-tog').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(btn.dataset.layer==='all'){
+          document.querySelectorAll('.ch-tog').forEach(b=>b.classList.add('active'));
+          drawChallenges('challengesCanvas',['team','talent','org']);
+          return;
+        }
+        btn.classList.toggle('active');
+        const active=[];
+        document.querySelectorAll('.ch-tog.active').forEach(b=>{if(b.dataset.layer!=='all')active.push(b.dataset.layer)});
+        drawChallenges('challengesCanvas',active);
+      });
+    });
+  }
+
   /* ═══════════════ MEET MAYA TOGGLE ═══════════════ */
   function initMeetToggle(){
     const btns=document.querySelectorAll('.mt-btn');
@@ -1920,7 +2005,7 @@
 
   /* ═══════════════ INIT ═══════════════ */
   function init(){
-    initMeetToggle();
+    initMeetToggle();initChallenges();
     const orgMap=new OrgMap(document.getElementById('orgCanvas'));orgMap.tick();
     initOpening(orgMap);buildTimeline();initScroll();initShowMore();
     initEvolution();initSentimentChart();initSkillScatter();initCollabThemes();initStats();
