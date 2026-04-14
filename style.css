@@ -367,6 +367,29 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);overflow-x
 
 .org-updated{font-size:.75rem;color:var(--c-collab);font-weight:600;margin-left:auto}
 
+/* Bridge callout */
+.org-bridge{text-align:center;padding:0 24px 32px;max-width:700px;margin:0 auto}
+.org-bridge p{font-family:var(--font-d);font-size:clamp(1.1rem,2vw,1.4rem);color:var(--text-dim);line-height:1.5}
+.org-bridge strong{color:var(--text)}
+
+/* Hero section title */
+.org-h3-hero{font-family:var(--font-d)!important;font-size:1.3rem!important;color:var(--c-collab)!important;margin-bottom:16px!important}
+
+/* Conversations counter */
+.org-convo-hero{margin-bottom:4px}
+.org-convo-num{font-family:var(--font-d);font-size:2.4rem;color:var(--text);font-weight:700}
+.org-convo-sub{font-size:.85rem;color:var(--text-dim);margin-left:8px}
+.org-convo-delta{font-size:.85rem;color:var(--c-collab);font-weight:600;margin-bottom:8px}
+.org-convo-note{font-size:.82rem;color:var(--text-muted);line-height:1.5}
+
+/* What Nadia is watching */
+.org-watching{display:flex;flex-direction:column;gap:10px}
+.org-watch-item{display:flex;align-items:flex-start;gap:10px;font-size:.85rem;color:var(--text-dim);line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:6px}
+.org-w-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* Bottom stats */
+.org-stats-bottom{margin-top:16px}
+
 /* Stat sub */
 .org-stat-sub{display:block;font-size:.65rem;color:var(--text-muted);margin-top:1px}
 
