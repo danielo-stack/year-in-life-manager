@@ -975,29 +975,38 @@
     });tick=true}},{passive:true});
 
     // Floating next-moment arrow — jumps to next KEY moment
+    const navContainer=document.querySelector('.tl-nav-arrows');
     const arrow=document.getElementById('tlNextArrow');
-    if(arrow){
-      new IntersectionObserver(e=>{arrow.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
+    const prevArrow=document.getElementById('tlPrevArrow');
+    if(arrow&&navContainer){
+      new IntersectionObserver(e=>{navContainer.classList.toggle('vis',e[0].isIntersecting)},{threshold:.01}).observe(tlSectionEl);
 
       const keyMomentEls=allMoments.filter(el=>el.classList.contains('key-moment'));
       const arrowLabel=document.getElementById('tlArrowLabel');
       let currentKeyIdx=0;
 
-      function updateArrowLabel(){
+      function updateNav(){
         if(currentKeyIdx<keyMomentEls.length){
           const num=keyMomentEls[currentKeyIdx].querySelector('.km-num');
           arrowLabel.textContent=num?num.textContent:'Next moment';
         }else{
-          arrowLabel.textContent='Done';
+          arrowLabel.textContent='What\'s next →';
         }
+        prevArrow.classList.toggle('vis',currentKeyIdx>0);
       }
-      updateArrowLabel();
+      updateNav();
 
+      // NEXT — go forward
       arrow.addEventListener('click',()=>{
-        if(currentKeyIdx>=keyMomentEls.length)return;
+        if(currentKeyIdx>=keyMomentEls.length){
+          const evoSection=document.getElementById('evoSection');
+          if(evoSection)evoSection.scrollIntoView({behavior:'smooth'});
+          navContainer.classList.remove('vis');
+          return;
+        }
         const target=keyMomentEls[currentKeyIdx];
         currentKeyIdx++;
-        updateArrowLabel();
+        updateNav();
 
         // Reveal ALL moments up to the target instantly (dramatic fast reveal)
         const targetIdx=+target.dataset.idx;
@@ -1022,6 +1031,16 @@
         setTimeout(()=>{
           target.scrollIntoView({behavior:'smooth',block:'center'});
         },Math.min(revealBatch.length*40+100,800));
+      });
+
+      // PREV — go back to previous key moment
+      prevArrow.addEventListener('click',()=>{
+        if(currentKeyIdx<=0)return;
+        currentKeyIdx=Math.max(0,currentKeyIdx-2); // go back one (we already incremented)
+        const target=keyMomentEls[currentKeyIdx];
+        currentKeyIdx++; // set to current so next click goes forward
+        updateNav();
+        if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
       });
     }
   }
