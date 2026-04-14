@@ -117,17 +117,10 @@
   <!-- ═══════════════════════════════════════════ -->
   <section class="meet-section" id="meetSection">
     <div class="meet-inner">
-      <!-- Toggle -->
-      <div class="meet-toggle" id="meetToggle">
-        <button class="mt-btn active" onclick="document.getElementById('meetProfile').classList.remove('hidden');document.getElementById('meetTeam').classList.add('hidden');this.classList.add('active');this.nextElementSibling.classList.remove('active')">Maya's Profile</button>
-        <button class="mt-btn" onclick="document.getElementById('meetTeam').classList.remove('hidden');document.getElementById('meetProfile').classList.add('hidden');this.classList.add('active');this.previousElementSibling.classList.remove('active')">Maya's Team</button>
-      </div>
-
-      <!-- PROFILE VIEW -->
-      <div class="meet-view" id="meetProfile">
-        <div class="meet-browser">
-          <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
-          <div class="mb-content">
+      <!-- PROFILE -->
+      <div class="meet-browser">
+        <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
+        <div class="mb-content">
             <div class="mp-header">
               <div class="mp-circles"><div class="mp-c1"></div><div class="mp-c2"></div><div class="mp-c3"></div></div>
               <div>
@@ -170,12 +163,13 @@
         </div>
       </div>
 
-      <!-- TEAM VIEW -->
-      <div class="meet-view hidden" id="meetTeam">
-        <div class="meet-browser">
-          <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
-          <div class="mb-content">
-            <h2 class="mt-title">Maya's Team</h2>
+      <p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:24px 0 8px">↓ Scroll to see Maya's Team ↓</p>
+
+      <!-- TEAM -->
+      <div class="meet-browser" style="margin-top:0">
+        <div class="mb-bar"><span class="mb-dot r"></span><span class="mb-dot y"></span><span class="mb-dot g"></span><span class="mb-url">valence.co</span></div>
+        <div class="mb-content">
+          <h2 class="mt-title">Maya's Team</h2>
             <p class="mt-sub">8 Members</p>
             <!-- Maya manager card -->
             <div class="tm-manager">
